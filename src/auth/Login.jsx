@@ -88,7 +88,7 @@ import {
   
         <Card className="w-96 my-32 border-2 bg-gray-50 ">
           <div className="flex justify-center mt-10">
-            <Typography variant="h4">เข้าสู่ระบบ</Typography>
+            <Typography variant="h4">เข้าสู่ระบบ.</Typography>
           </div>
           <CardBody className="flex flex-col mt-5 gap-4 mt-10">
             <Input
