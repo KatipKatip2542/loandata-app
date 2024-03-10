@@ -95,6 +95,17 @@ const Process = () => {
 
   const locationDataStore = useRecoilValue(locationStore);
 
+  const selectStatus = [
+    {
+       id: 0 ,  
+       name: "กำลังจ่าย"
+    },
+    {
+       id: 2 ,  
+       name: "ลูกค้าเสีย"
+    },
+]
+
   const locationOptions = locationDataStore?.map((location) => ({
     value: location.id,
     label: location.name,
@@ -103,6 +114,11 @@ const Process = () => {
   const customerOptions = customerDataStore?.map((customer) => ({
     value: customer.id,
     label: customer.name,
+  }));
+
+  const statusOptions = selectStatus?.map((status) => ({
+    value: status.id,
+    label: status.name,
   }));
 
   const fetchProcess = async () => {
@@ -163,7 +179,7 @@ const Process = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
-  const [statused, setStatused] = useState("");
+  // const [statused, setStatused] = useState("");
 
   const fetchStatus = async (statused) => {
     try {
@@ -207,7 +223,7 @@ const Process = () => {
       // setSumUser([]);
       const response = await getProcessUserList(id);
       if (response?.status == 200) {
-        // console.log(response?.data);
+        console.log(response?.data);
         setSumUser(response?.data);
         setDisableButton(
           status == "1" 
@@ -225,6 +241,7 @@ const Process = () => {
   const fetchUserListSum = async (id) => {
     try {
       const response = await getProcessUserListSum(id);
+      console.log(response)
       setUserListSum(response);
     } catch (error) {
       console.error(error);
@@ -313,6 +330,17 @@ const Process = () => {
     // เซ็ตข้อมูลลูกค้าที่ถูกเลือกใน state
     setSelectedCustomer(customer);
     setSelectedValue(e);
+  };
+
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [statusValue, setStatusValue] = useState(null);
+
+  const handleStatusSelect = (e) => {
+    const status = selectStatus.find(
+      (status) => status.id === e.value
+    );
+    setSelectedStatus(status);
+    setStatusValue(e);
   };
 
   const [amountDate, setAmountDate] = useState(0);
@@ -450,15 +478,19 @@ const Process = () => {
       toast.error(error);
     }
   };
+
+
   
   const handleUpdate = async () => {
-    // console.log(userListData)
+    console.log(statusValue.value)
     try {
       let data = {
         id: userId,
         process_id: dataProcessStore?.id ,
-        status: userListData?.status == 0 ? 2 : userListData?.status == 2 ? 0 : ''  ,
-        price: Number(userListData?.price),
+        // status: userListData?.status == 0 ? 2 : userListData?.status == 2 ? 0 : ''  ,
+        status: Number(statusValue.value)  ,
+        // price: Number(userListData?.price),
+        price: Number(amount),
         date: Number(userListData?.count_day)
       };
       console.log(data)
@@ -469,6 +501,7 @@ const Process = () => {
         handleFetch();
         setSelectDisable(0),
         setSelectedValue(null),
+        setStatusValue(null),
         setAmount(0),
         setAmountDate(0),
         setSearchQueryStart(new Date()),
@@ -581,7 +614,7 @@ const Process = () => {
                       type="number"
                       min={0}
                       value={amount}
-                      disabled={selectDisable}
+                      // disabled={selectDisable}
                       className="peer w-[100%] h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 disabled:cursor-not-allowed transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent placeholder:opacity-0 focus:placeholder:opacity-100 text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-blue-gray-500 "
                       style={{ backgroundColor: "rgb(244,244,244)" }}
                       onChange={(e) => setAmount(e.target.value)}
@@ -608,6 +641,23 @@ const Process = () => {
                   </div>
                 </div>
               </div>
+                            
+              <div className=" w-full  flex flex-col justify-center mt-3  ">
+                <Typography>สถานะ:</Typography>
+                <Select
+                  classNamePrefix="select"
+                  placeholder="เลือกสถานะ"
+                  // isClearable={isClearable}
+                  isSearchable={isSearchable}
+                  // isDisabled={selectDisable}
+                  value={statusValue}
+                  // value={{ value: selectedCustomer?.id, label: selectedCustomer?.name }}
+                  name="color"
+                  options={statusOptions}
+                  onChange={(e) => handleStatusSelect(e)}
+                />
+              </div>
+
               {/* <div className="flex w-full flex-col lg:flex-row justify-center mt-3 gap-3  ">
                   <div className="w-full lg:w-[50%]">
                     <div className=" relative w-full min-w-[100px] h-10">
@@ -683,6 +733,7 @@ const Process = () => {
                   </Button>
                 </div>
               </div>
+
               <div className="flex w-full flex-col h-full mt-4 2xl:mt-[97px]     ">
                 <div
                   className=" lg:mt-[145px] xl:mt-[90px] sm:mt-0 md:mt-[18px] md:h-[400px]  2xl:mt-0 p-3   lg:h-[350px] xl:h-[273px] 2xl:h-[290px] items-center rounded-md    mb-2 "
@@ -1006,6 +1057,11 @@ const Process = () => {
                                         //     : true
                                         // ),
                                         setSelectedValue(data),
+                                        setStatusValue({
+                                          ...statusValue,
+                                          value: data?.status ,
+                                          label: data?.status == 0 ? "กำลังจ่าย" : "ลูกค้าเสีย" ,
+                                        }),
                                         setSelectedValue({
                                           ...selectedValue,
                                           label: data?.name,
@@ -1519,10 +1575,10 @@ const Process = () => {
               ยอดกู้ใหม่{" "}
               <span>{Number(returnReload?.newSum).toLocaleString()}</span> บาท
             </Typography>
-            <Typography className=" text-xl font-bold">
+            {/* <Typography className=" text-xl font-bold">
               หักจากยอดเก่าคงเหลือ{" "}
               <span>{Number(returnReload?.mySum).toLocaleString()}</span> บาท
-            </Typography>
+            </Typography> */}
             <Typography className=" text-xl font-bold">
               หักค่าเอกสาร และหักงวดแรก คงเหลือ{" "}
               <span>{Number(returnReload?.totalSum).toLocaleString()}</span> บาท
