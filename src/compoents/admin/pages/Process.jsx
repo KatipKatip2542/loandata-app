@@ -223,7 +223,7 @@ const Process = () => {
       // setSumUser([]);
       const response = await getProcessUserList(id);
       if (response?.status == 200) {
-        console.log(response?.data);
+        // console.log(response?.data);
         setSumUser(response?.data);
         setDisableButton(
           status == "1" 
@@ -528,7 +528,7 @@ const Process = () => {
       };
 
       const response = await sendReload(data);
-      // console.log(response?.response?.data);
+      console.log(response?.data);
       if (response?.status == 200) {
         toast.success("รียอด สำเร็จ");
         setReturnReload(response?.data);
@@ -552,8 +552,8 @@ const Process = () => {
 
   
   // console.log(dataProcessStore.id);
-  console.log(listDataCustomer)
-  console.log(sumUser);
+  // console.log(listDataCustomer)
+  // console.log(sumUser);
   // console.log(price)
 
   return (
@@ -1479,20 +1479,6 @@ const Process = () => {
         <DialogHeader className="bg-purple-700 py-3  px-3  justify-center text-lg text-white opacity-80">
           <Typography variant="h5">ยืนยันการสร้าง</Typography>
         </DialogHeader>
-        {/* <DialogBody divider className=" h-[47vh]">
-          <div className=" w-full  flex flex-col justify-center mt-3  ">
-            <Select
-              className="  max-h-0"
-              classNamePrefix="select"
-              placeholder="เลือกบริษัท"
-              // isClearable={isClearable}
-              isSearchable={isSearchable}
-              name="color"
-              options={locationOptions}
-              onChange={(e) => handleLocationSelect(e)}
-            />
-          </div>
-        </DialogBody> */}
         <DialogFooter className="flex justify-center gap-5 mt-3">
           <Button
             variant="text"
@@ -1574,6 +1560,10 @@ const Process = () => {
             <Typography className=" text-xl font-bold">
               ยอดกู้ใหม่{" "}
               <span>{Number(returnReload?.newSum).toLocaleString()}</span> บาท
+            </Typography>
+            <Typography className=" text-xl font-bold">
+            จำนวนเงินที่จ่ายเกิน{" "}
+              <span>{Number(returnReload?.qty_overpay).toLocaleString()}</span> บาท
             </Typography>
             {/* <Typography className=" text-xl font-bold">
               หักจากยอดเก่าคงเหลือ{" "}

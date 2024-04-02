@@ -3,7 +3,7 @@ import { HeaderAPI } from "../../headerApi";
 
 
 export const getProcess = async (searchQuery) => {
-  console.log(searchQuery);
+  // console.log(searchQuery);
   try {
     // let token = localStorage.getItem("Token")
     const response = await axios.get(
@@ -36,7 +36,7 @@ export const getProcessId = async (searchUserId) => {
 };
 
 export const addProcess = async (data) => {
-  console.log(data);
+  // console.log(data);
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_APP_API}/api/process`,
@@ -60,7 +60,7 @@ export const getUpdateAll = async (processId) => {
         ...HeaderAPI(localStorage.getItem("Token")),
       }
     );
-    console.log(response)
+    // console.log(response)
     return response;
   } catch (error) {
     console.error(error);
@@ -116,7 +116,7 @@ export const getProcessUserList = async (id) => {
         ...HeaderAPI(localStorage.getItem("Token")),
       }
     );
-    console.log(response)
+    // console.log(response)
     return response;
   } catch (error) {
     return error
