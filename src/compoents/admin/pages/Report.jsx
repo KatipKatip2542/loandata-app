@@ -4,6 +4,7 @@ import { useState } from "react";
 import NotPaid from "./NotPaid";
 import NotPaidLocation from "./NotPaidLoation";
 import LostCustomer from "./LostCustomer";
+import Refund from "./Refund";
 
 
 
@@ -55,13 +56,27 @@ const Report = () => {
                     size="lg"
                     variant="outlined"
                     className={`w-[200px]  py-3  px-4  shadow-lg border border-gray-400 ${
+                      activeCustomerMenu === "menu2"
+                        ? "bg-red-200 text-black"
+                        : ""
+                    }`}
+                    onClick={() => setActiveCustomerMenu("menu2")}
+                  >
+                    สรุปลูกค้าเสีย
+                  </Button>
+                </div>
+                <div className="flex justify-center">
+                  <Button
+                    size="lg"
+                    variant="outlined"
+                    className={`w-[200px]  py-3  px-4  shadow-lg border border-gray-400 ${
                       activeCustomerMenu === "menu3"
-                        ? "bg-yellow-300 text-black"
+                        ? "bg-blue-200 text-black"
                         : ""
                     }`}
                     onClick={() => setActiveCustomerMenu("menu3")}
                   >
-                    สรุปลูกค้าเสีย
+                    ประวัติรียอด
                   </Button>
                 </div>
               </div>
@@ -76,13 +91,13 @@ const Report = () => {
           {activeCustomerMenu === "menu2" && (
             <div>
               <hr className=" mt-5 border border-gray-500" />
-              <NotPaidLocation />
+              <LostCustomer />
             </div>
           )}
           {activeCustomerMenu === "menu3" && (
             <div>
               <hr className=" mt-5 border border-gray-500" />
-              <LostCustomer />
+              <Refund />
             </div>
           )}
         </div>

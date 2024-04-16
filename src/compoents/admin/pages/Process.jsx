@@ -7,7 +7,10 @@ import {
   DialogBody,
   DialogHeader,
   DialogFooter,
+  Input,
+  Switch
 } from "@material-tailwind/react";
+// import { Switch } from "antd";
 
 import Select from "react-select";
 
@@ -33,12 +36,12 @@ import {
   processStore,
 } from "../../../store/Store";
 
-import { FaRegSave, FaExchangeAlt } from "react-icons/fa";
+import { FaRegSave } from "react-icons/fa";
 import { AiOutlineStop } from "react-icons/ai";
 import { BsPlusCircle, BsFillEyeFill } from "react-icons/bs";
 import { IoIosSave } from "react-icons/io";
 import { TbReload } from "react-icons/tb";
-import { MdSmsFailed , MdCancel  } from "react-icons/md";
+import { MdSmsFailed, MdCancel } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
 
 import {
@@ -54,16 +57,19 @@ import {
   getProcessUserListSum,
   sendUpdate,
   sendReload,
+  sendClose,
 } from "../../../api/ProcessApi";
 import { getCustomer } from "../../../api/customerApi";
 
 const Process = () => {
   //----------  Data Table --------------------//
   const [listData, setListData] = useState([]);
+  const [searchQuery1, setSearchQuery1] = useState("");
   const [dataProcessId, setDataProcessId] = useState([]);
   const [activeCustomerMenu, setActiveCustomerMenu] = useState("menu1");
   const [sumUser, setSumUser] = useState([]);
-  // const [cardId, setCardId] = useState("");
+
+  const [disableInput ,setDisableInput] = useState(false)
 
   const [customerDataStore, setCustomerDataStore] =
     useRecoilState(customerStore);
@@ -76,7 +82,7 @@ const Process = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeRow, setActiveRow] = useState();
   const [activeRow2, setActiveRow2] = useState(0);
-  const [price,setPrice] = useState(null)
+  const [price, setPrice] = useState(null);
 
   const [selectDisable, setSelectDisable] = useState(0);
   const [userListSum, setUserListSum] = useState([]);
@@ -97,14 +103,14 @@ const Process = () => {
 
   const selectStatus = [
     {
-       id: 0 ,  
-       name: "กำลังจ่าย"
+      id: 0,
+      name: "กำลังจ่าย",
     },
     {
-       id: 2 ,  
-       name: "ลูกค้าเสีย"
+      id: 2,
+      name: "ลูกค้าเสีย",
     },
-]
+  ];
 
   const locationOptions = locationDataStore?.map((location) => ({
     value: location.id,
@@ -174,16 +180,20 @@ const Process = () => {
     }
   };
 
-  useEffect(()=>{
-    fetchUpdateAll()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  useEffect(() => {
+    fetchUpdateAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // const [statused, setStatused] = useState("");
 
   const fetchStatus = async (statused) => {
     try {
-      const response = await getProcessUser(dataProcessStore?.id, statused);
+      const response = await getProcessUser(
+        dataProcessStore?.id,
+        statused,
+        searchQuery1
+      );
       if (response?.status == 200) {
         setListDataCustomer(response?.data);
       } else {
@@ -195,15 +205,18 @@ const Process = () => {
   };
 
   useEffect(() => {
-    fetchStatus( " ");
+    fetchStatus(" ");
     // if (dataProcessStore?.id) {
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataProcessStore?.id]);
+  }, [dataProcessStore?.id, searchQuery1]);
 
   const fetchStatus1 = async () => {
     try {
-      const response = await getProcessUser1(dataProcessStore?.id);
+      const response = await getProcessUser1(
+        dataProcessStore?.id,
+        searchQuery1
+      );
       // console.log(response);
       if (response?.status == 200) {
         setListDataCustomer(response.data);
@@ -215,21 +228,24 @@ const Process = () => {
     }
   };
 
+  useEffect(() => {
+    fetchStatus1();
+    // if (dataProcessStore?.id) {
+    // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataProcessStore?.id, searchQuery1]);
+
   const [userId, setUserId] = useState("");
 
   const fetchUserList = async (id, status) => {
     try {
-      setUserId(id); 
+      setUserId(id);
       // setSumUser([]);
       const response = await getProcessUserList(id);
       if (response?.status == 200) {
-        // console.log(response?.data);
+        console.log(response?.data);
         setSumUser(response?.data);
-        setDisableButton(
-          status == "1" 
-            ? false
-            : true
-        );
+        setDisableButton(status == "1" ? false : true);
       } else {
         toast.error(response);
       }
@@ -238,10 +254,13 @@ const Process = () => {
     }
   };
 
+  // const [fatchId, setFetchId] = useState("");
+
   const fetchUserListSum = async (id) => {
+    // setFetchId(id);
     try {
       const response = await getProcessUserListSum(id);
-      console.log(response)
+      console.log(response);
       setUserListSum(response);
     } catch (error) {
       console.error(error);
@@ -336,9 +355,7 @@ const Process = () => {
   const [statusValue, setStatusValue] = useState(null);
 
   const handleStatusSelect = (e) => {
-    const status = selectStatus.find(
-      (status) => status.id === e.value
-    );
+    const status = selectStatus.find((status) => status.id === e.value);
     setSelectedStatus(status);
     setStatusValue(e);
   };
@@ -355,8 +372,6 @@ const Process = () => {
     newDate?.setDate(newDate.getDate() + days);
     return newDate;
   };
-
-  const [hideButton, setHideButton] = useState(false);
 
   const handleUser = async () => {
     setSelectDisable(true);
@@ -399,13 +414,15 @@ const Process = () => {
 
   // Handle change for daysToAdd
   const handleDaysToAddChange = (event) => {
-    const inputValue = event.target.value || 0;
+    const inputValue = event.target.value  || 0;
     const newDaysToAdd = parseInt(inputValue, 10);
     setAmountDate(newDaysToAdd);
 
-    if (searchQueryStart) {
-      setSearchQueryEnd(addDays(searchQueryStart, newDaysToAdd));
-    }
+
+
+    // if (searchQueryStart) {
+    //   setSearchQueryEnd(addDays(searchQueryStart, newDaysToAdd));
+    // }
   };
   const [changeDate, setChangeDate] = useState("");
 
@@ -414,27 +431,26 @@ const Process = () => {
   const startEnd = moment(searchQueryEnd).format("YYYY-MM-DD");
   const dateSend = moment(changeDate).format("YYYY-MM-DD");
 
-
   // console.log(changeDate)
   // console.log(dateCancel)
-  
- 
+  console.log(listDataCustomer)
+
   const handleChangeStatus = async (changestatus, dataed) => {
     try {
       // console.log(dateSend);
-      if (dateSend == "Invalid date" || price == null || price < 0 ) {
+      if (dateSend == "Invalid date" && price == null || price < 0  || price == null || price < 0) {
         toast.error("กรุณาระบบวันที่ และ  จำนวนเงิน");
       } else {
         let data = {
           id: dataed?.id,
           status: changestatus,
-          price: price ,
+          price: price,
           process_user_id: userId,
           process_id: dataProcessStore?.id,
-          date: dateSend ,
+          date: dateSend == 'Invalid date' ? null : dateSend ,
+          status_count: dataed?.status_count,
         };
         console.log(data);
-        console.log(price);
 
         const response = await changeStatus(data);
         // console.log(response);
@@ -442,7 +458,7 @@ const Process = () => {
           toast.success("เปลี่ยนสถานะ สำเร็จ");
           setChangeDate("");
           handleFetch();
-          setPrice(null)
+          setPrice(null);
         } else {
           toast.error(response?.response?.data);
         }
@@ -452,64 +468,90 @@ const Process = () => {
     }
   };
 
-
   const handleChangeCancel = async (changestatus, dataed) => {
     try {
-        let data = {
-          id: dataed?.id,
-          status: Number(changestatus),
-          price: price <= 0 ? dataed?.price : price,
-          process_user_id: userId,
-          process_id: dataProcessStore?.id,
-          date: moment(dataed?.date,"DD-MM-YYYY").add(-543, 'years').format("YYYY-MM-DD")
-        }
-        const response = await changeCancel(data);
-        // console.log(response);
-        if (response.status == 200) {
-          toast.success("เปลี่ยนสถานะ สำเร็จ");
-          setChangeDate("");
-          handleFetch();
-        } else {
-          toast.error(response?.response?.data);
-        }
-
-        
+      let data = {
+        id: dataed?.id,
+        status: Number(changestatus),
+        price: price <= 0 ? dataed?.price : price,
+        process_user_id: userId,
+        process_id: dataProcessStore?.id,
+        date: moment(dataed?.date, "DD-MM-YYYY")
+          .add(-543, "years")
+          .format("YYYY-MM-DD"),
+      };
+      const response = await changeCancel(data);
+      // console.log(response);
+      if (response.status == 200) {
+        toast.success("เปลี่ยนสถานะ สำเร็จ");
+        setChangeDate("");
+        handleFetch();
+      } else {
+        toast.error(response?.response?.data);
+      }
     } catch (error) {
       toast.error(error);
     }
   };
 
-
-  
+  // const [dateUpdate ,setDateUpdate] = useState('')
   const handleUpdate = async () => {
-    console.log(statusValue.value)
+    console.log(statusValue.value);
     try {
       let data = {
         id: userId,
-        process_id: dataProcessStore?.id ,
+        process_id: dataProcessStore?.id,
         // status: userListData?.status == 0 ? 2 : userListData?.status == 2 ? 0 : ''  ,
-        status: Number(statusValue.value)  ,
+        status: Number(statusValue.value),
         // price: Number(userListData?.price),
         price: Number(amount),
-        date: Number(userListData?.count_day)
+        // date: Number(userListData?.count_day)
+        date: Number(amountDate),
       };
-      console.log(data)
+      console.log(data);
       const response = await sendUpdate(data);
       console.log(response);
       if (response?.status == 200) {
         toast.success("เปลี่ยนสถานะ สำเร็จ");
         handleFetch();
         setSelectDisable(0),
-        setSelectedValue(null),
-        setStatusValue(null),
-        setAmount(0),
-        setAmountDate(0),
-        setSearchQueryStart(new Date()),
-        setSearchQueryEnd(new Date()),
-        setUserListData([])
+          setSelectedValue(null),
+          setStatusValue(null),
+          setAmount(0),
+          setAmountDate(0),
+          setSearchQueryStart(new Date()),
+          setSearchQueryEnd(new Date()),
+          setUserListData([]);
         // setDisableButton(false)
       } else {
-        toast.error("เปลี่ยนสถานะ ไม่สำเร็จ");
+        // toast.error("เปลี่ยนสถานะ ไม่สำเร็จ");
+        toast.error(response?.response?.data);
+      }
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+
+  const handleClose = async () => {
+    try {
+      let data = {
+        process_user_id: userId,
+        process_id: dataProcessStore?.id,
+        price: userListData?.total,
+        count_day: userListData?.count_day,
+      };
+
+      const response = await sendClose(data);
+      console.log(response?.data);
+      if (response?.status == 200) {
+        toast.success("ปิดยอด สำเร็จ");
+        setReturnReload(response?.data);
+        fetchUserList()
+        // handleModalDataReload();
+        handleFetch();
+      } else {
+        toast.error(response?.response?.data);
+        // handleModalReload();
       }
     } catch (error) {
       toast.error(error);
@@ -519,11 +561,13 @@ const Process = () => {
   const [returnReload, setReturnReload] = useState([]);
 
   const handleReload = async () => {
+
+    console.log(userListData)
     try {
       let data = {
         process_user_id: userId,
-        process_id: dataProcessStore?.id,
-        price: userListData?.price,
+        process_id: dataProcessStore?.id, 
+        price: userListData?.total,
         count_day: userListData?.count_day,
       };
 
@@ -550,20 +594,40 @@ const Process = () => {
     fetchUserListSum(userId);
   };
 
-  
   // console.log(dataProcessStore.id);
   // console.log(listDataCustomer)
   // console.log(sumUser);
   // console.log(price)
 
+  const handleChangeSwitch = (index, checked) => {
+    // คัดลอก sumUser และอัพเดทค่า status_count ตาม checked ใหม่
+    console.log(checked);
+    const updatedSumUser = sumUser.map((data, i) => {
+      if (i === index) {
+        return {
+          ...data,
+          status_count: checked == true ? "1" : "0",
+        };
+      }
+      return data;
+    });
+
+    // อัพเดทค่า sumUser ใหม่
+    setSumUser(updatedSumUser);
+
+    // ทำอะไรสิ่งที่คุณต้องการต่อที่นี่ เช่น ส่งข้อมูลไปยัง backend
+  };
+
+  console.log(sumUser);
+  console.log(disableButton)
+
   return (
     <Card>
       <div className="flex flex-col w-full mt-1 px-2 ">
-        <ToastContainer className="toast " autoClose={800} theme="colored" />
-
+        <ToastContainer className="toast " autoClose={2500} theme="colored" />
         <div className="flex   flex-col  overflow-auto   items-center ">
           <div className="flex w-full flex-col md:flex-row gap-5 ">
-            <div className="flex flex-col w-full h-[85vh] md:w-4/12 xl:w-4/12 ">
+            <div className="flex flex-col w-full h-[85vh] md:w-4/12 xl:w-3/12  ">
               <div className="flex  items-center justify-between gap-3 ">
                 <div>
                   <Typography className="text-lg lg:text-xl font-bold">
@@ -614,7 +678,7 @@ const Process = () => {
                       type="number"
                       min={0}
                       value={amount}
-                      // disabled={selectDisable}
+                      disabled={disableInput }
                       className="peer w-[100%] h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 disabled:cursor-not-allowed transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent placeholder:opacity-0 focus:placeholder:opacity-100 text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-blue-gray-500 "
                       style={{ backgroundColor: "rgb(244,244,244)" }}
                       onChange={(e) => setAmount(e.target.value)}
@@ -630,7 +694,8 @@ const Process = () => {
                       type="number"
                       min={0}
                       value={amountDate}
-                      disabled={selectDisable}
+                      // disabled={selectDisable}
+                      disabled={disableInput}
                       className="peer w-[100%] h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 disabled:cursor-not-allowed transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent placeholder:opacity-0 focus:placeholder:opacity-100 text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-blue-gray-500 "
                       style={{ backgroundColor: "rgb(244,244,244)" }}
                       onChange={handleDaysToAddChange}
@@ -641,7 +706,7 @@ const Process = () => {
                   </div>
                 </div>
               </div>
-                            
+
               <div className=" w-full  flex flex-col justify-center mt-3  ">
                 <Typography>สถานะ:</Typography>
                 <Select
@@ -684,60 +749,88 @@ const Process = () => {
                     </div>
                   </div>
                 </div> */}
-              <div className="flex w-full flex-col lg:flex-row justify-center mt-5 gap-3  ">
-                <div className="w-full ">
-                  <Button
-                    size="sm"
-                    variant="gradient"
-                    color="purple"
-                    disabled={userListData?.status == 0 ? false : true}
-                    className="text-sm flex justify-center  items-center w-full   bg-green-500"
-                    onClick={handleModalReload}
-                  >
-                    <span className="mr-2 text-xl ">
-                      <TbReload />
-                    </span>
-                    รียอด
-                  </Button>
+              <div className="flex flex-col w-full justify-center mt-5 gap-3  ">
+                <div className="flex gap-5 ">
+                  <div className="w-full ">
+                    <Button
+                      size="sm"
+                      variant="gradient"
+                      color="purple"
+                      disabled={userListData?.status == 0 ? false : true}
+                      className="text-sm flex justify-center  items-center w-full   bg-green-500"
+                      onClick={handleModalReload}
+                    >
+                      <span className="mr-2 text-xl ">
+                        <TbReload />
+                      </span>
+                      รียอด
+                    </Button>
+                  </div>
+                  <div className="w-full ">
+                    <Button
+                      size="sm"
+                      variant="gradient"
+                      color="purple"
+                      // disabled={!selectDisable}
+                      disabled={
+                        userListData?.status == 0 || userListData?.status == 2
+                          ? false
+                          : true
+                      }
+                      className="text-sm  flex justify-center  items-center w-full   bg-green-500"
+                      onClick={handleUpdate}
+                    >
+                      <span className="mr-2 text-xl ">
+                        <MdSmsFailed />
+                      </span>
+                      อัพเดท
+                    </Button>
+                  </div>
                 </div>
-   
-                <div className="w-full ">
-                  <Button
-                    size="sm"
-                    variant="gradient"
-                    color="purple"
-                    // disabled={!selectDisable}
-                    disabled={userListData?.status == 0 || userListData?.status == 2  ? false : true}
-                    className="text-sm  flex justify-center  items-center w-full   bg-green-500"
-                    onClick={handleUpdate}
-                  >
-                    <span className="mr-2 text-xl ">
-                      <MdSmsFailed />
-                    </span>
-                    อัพเดท
-                  </Button>
-                </div>
-                <div className="w-full">
-                  <Button
-                    size="sm"
-                    variant="gradient"
-                    color="green"
-                    disabled={selectDisable}
-                    className="text-sm flex justify-center  items-center  w-full  bg-green-500"
-                    onClick={handleUser}
-                  >
-                    <span className="mr-2 text-xl ">
-                      <IoIosSave />
-                    </span>
-                    บันทึก
-                  </Button>
+
+                <div className="flex gap-5 ">
+                  <div className="w-full ">
+                    <Button
+                      size="sm"
+                      variant="gradient"
+                      color="red"
+                      // disabled={!selectDisable}
+                      disabled={
+                        userListData?.status == 0 || userListData?.status == 2
+                          ? false
+                          : true
+                      }
+                      className="text-sm  flex justify-center  items-center w-full   bg-green-500"
+                      onClick={handleClose}
+                    >
+                      <span className="mr-2 text-xl ">
+                        <MdSmsFailed />
+                      </span>
+                      ปิดยอด
+                    </Button>
+                  </div>
+                  <div className="w-full">
+                    <Button
+                      size="sm"
+                      variant="gradient"
+                      color="green"
+                      disabled={selectDisable}
+                      className="text-sm flex justify-center  items-center  w-full  bg-green-500"
+                      onClick={handleUser}
+                    >
+                      <span className="mr-2 text-xl ">
+                        <IoIosSave />
+                      </span>
+                      บันทึก
+                    </Button>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex w-full flex-col h-full mt-4 2xl:mt-[97px]     ">
+              <div className="flex w-full flex-col h-full mt-4 2xl:mt-[20px]   ">
                 <div
-                  className=" lg:mt-[145px] xl:mt-[90px] sm:mt-0 md:mt-[18px] md:h-[400px]  2xl:mt-0 p-3   lg:h-[350px] xl:h-[273px] 2xl:h-[290px] items-center rounded-md    mb-2 "
-                  style={{ border: "2px solid #b3b3b3"  }}
+                  className=" lg:mt-[145px] xl:mt-[4px] sm:mt-0 md:mt-[18px] md:h-[400px]  2xl:mt-0 p-3   lg:h-[350px] xl:h-[273px] 2xl:h-[240px] items-center rounded-md    mb-2 "
+                  style={{ border: "2px solid #b3b3b3" }}
                 >
                   <Typography className="text-xl font-bold ">
                     ยอดรวม(ทั้งหมด)
@@ -768,19 +861,6 @@ const Process = () => {
                         : Number(dataProcessId?.overdue) < 0
                         ? 0
                         : Number(dataProcessId?.overdue).toLocaleString()}
-                    </sapn>{" "}
-                    บาท
-                  </Typography>
-                  <Typography className=" font-bold mt-1">
-                    กำไร:{" "}
-                    <sapn>
-                      {Number(dataProcessId?.overdue).toLocaleString() == "NaN"
-                        ? 0
-                        : Number(dataProcessId?.overdue) < 0
-                        ? Math.abs(
-                            Number(dataProcessId?.overdue)
-                          ).toLocaleString()
-                        : 0}
                     </sapn>{" "}
                     บาท
                   </Typography>
@@ -885,7 +965,21 @@ const Process = () => {
                   style={{ border: "1px solid #cccccc" }}
                 >
                   <div className="mt-0 h-[380px] w-full overflow-auto  ">
-                    <table className="w-full min-w-max " >
+                    <div className="flex justify-end px-2">
+                      <div className=" flex items-end w-[300px] py-1 justify-end">
+                        <Input
+                          type="text"
+                          label="ค้นหาลูกค้า"
+                          className="w-[200px]  "
+                          //   placeholder="ค้นหา ชื่อลูกค้า"
+                          color="blue-gray"
+                          value={searchQuery1}
+                          onChange={(e) => setSearchQuery1(e.target.value)}
+                          style={{ backgroundColor: "#F4F4F4" }}
+                        />
+                      </div>
+                    </div>
+                    <table className="w-full min-w-max ">
                       <thead>
                         <tr>
                           <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-2">
@@ -964,7 +1058,7 @@ const Process = () => {
                                   index === activeRow ? "bg-gray-300" : ""
                                 }`;
                             return (
-                              <tr key={index} >
+                              <tr key={index}>
                                 <td className={classes}>
                                   <div className="flex items-center justify-center">
                                     <Typography
@@ -1051,16 +1145,24 @@ const Process = () => {
                                         setSumUser([]),
                                         setUserListData(data),
                                         fetchUserListSum(data?.id),
-                                        // setDisableButton(
-                                        //   data?.status == 2 
-                                        //     ? false
-                                        //     : true
-                                        // ),
+                                        setDisableInput(
+                                          data?.status == 2
+                                            ? true
+                                            : false
+                                        ),
+                                        setDisableButton(
+                                          data?.status == 2
+                                            ? true
+                                            : false
+                                        ),
                                         setSelectedValue(data),
                                         setStatusValue({
                                           ...statusValue,
-                                          value: data?.status ,
-                                          label: data?.status == 0 ? "กำลังจ่าย" : "ลูกค้าเสีย" ,
+                                          value: data?.status,
+                                          label:
+                                            data?.status == 0
+                                              ? "กำลังจ่าย"
+                                              : "ลูกค้าเสีย",
                                         }),
                                         setSelectedValue({
                                           ...selectedValue,
@@ -1108,7 +1210,7 @@ const Process = () => {
                 <div className="w-full md:w-[70%]">
                   <Card
                     className="w-full md:h-[66vh] lg:h-[60vh] xl:h-[40vh]  2xl:h-[42vh]  p-2 rounded-md"
-                    style={{ border: "2px solid #b3b3b3"  }}
+                    style={{ border: "2px solid #b3b3b3" }}
                   >
                     <div className="h-[380px] overflow-auto ">
                       <table className="w-full min-w-max  ">
@@ -1150,6 +1252,15 @@ const Process = () => {
                                 สถานะ
                               </Typography>
                             </th>
+                            <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-1 ">
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-bold leading-none opacity-70"
+                              >
+                                ไม่นับ/นับ
+                              </Typography>
+                            </th>
                             <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-1">
                               <Typography
                                 variant="small"
@@ -1169,9 +1280,7 @@ const Process = () => {
                               const pageIndex = startIndex + index;
                               const classes = isLast
                                 ? "p-1"
-                                : `p-1 border-b border-blue-gray-50 ${
-                                    index === activeRow2 ? "bg-gray-300" : ""
-                                  }`;
+                                : `p-1 border-b border-blue-gray-50 ${data?.status == 1 ? "bg-gray-300" : ''} `;
                               return (
                                 <tr key={index}>
                                   <td className={classes}>
@@ -1272,12 +1381,33 @@ const Process = () => {
                                   </td>
                                   <td className={classes}>
                                     <div className="flex items-center justify-center">
+                                      <Switch
+                                        color="blue"
+                                        // className="bg-green-500"
+                                        // checked={data?.status_count}
+                                        checked={data.status_count == "1"}
+                                        onChange={(e) =>
+                                          handleChangeSwitch(
+                                            index,
+                                            e.target.checked
+                                          )
+                                        }
+                                        disabled={
+                                          data?.status == 1 ? true : false
+                                        }
+                                      />
+                                    </div>
+                                  </td>
+                                  <td className={classes}>
+                                    <div className="flex items-center justify-center">
                                       <IconButton
                                         variant="outlined"
                                         color="green"
                                         size="sm"
                                         className="ml-3 "
-                                        disabled={data?.status == 0 ? false : true }
+                                        disabled={
+                                          data?.status == 0 ? false : true
+                                        }
                                         onClick={() => [
                                           setActiveRow2(index),
                                           handleChangeStatus(
@@ -1298,8 +1428,9 @@ const Process = () => {
                                         color="red"
                                         size="sm"
                                         className="ml-1  "
-                                        disabled={data?.status == 1 ? false : true }
-
+                                        disabled={
+                                          data?.status == 1 ? false : true
+                                        }
                                         onClick={() => [
                                           setActiveRow2(index),
                                           handleChangeCancel(
@@ -1313,7 +1444,7 @@ const Process = () => {
                                           // handleButton(),
                                         ]}
                                       >
-                                        <MdCancel  className="h-6 w-6  text-light-red-700 " />
+                                        <MdCancel className="h-6 w-6  text-light-red-700 " />
                                       </IconButton>
                                     </div>
                                   </td>
@@ -1326,8 +1457,8 @@ const Process = () => {
                   </Card>
                 </div>
                 <div
-                  className="flex w-full  md:w-[30%] md:h-[450px] lg:h-[400px]  xl:h-[295px] 2xl:h-[291px] rounded-md  "
-                  style={{ border: "2px solid #b3b3b3"  }}
+                  className="flex w-full  md:w-[30%] md:h-[450px] lg:h-[400px]  xl:h-[279px] 2xl:h-[291px]  rounded-md  "
+                  style={{ border: "2px solid #b3b3b3" }}
                 >
                   <div className="w-full gap-3  p-3">
                     <Typography className="text-xl font-bold">
@@ -1337,13 +1468,14 @@ const Process = () => {
                       ระยะเวลา:{" "}
                       <sapn>
                         {" "}
-                        {Number(userListSum?.count_day).toLocaleString() == "NaN"
+                        {Number(userListSum?.count_day).toLocaleString() ==
+                        "NaN"
                           ? 0
                           : Number(userListSum?.count_day).toLocaleString()}
                       </sapn>{" "}
                       วัน
                     </Typography>
-                    <Typography className=" font-bold mt-1  " >
+                    <Typography className=" font-bold mt-1  ">
                       ชำระแล้ว:{" "}
                       <sapn>
                         {" "}
@@ -1353,24 +1485,36 @@ const Process = () => {
                       </sapn>{" "}
                       วัน
                     </Typography>
-                    <Typography className=" font-bold mt-1  " >
+                    <Typography className=" font-bold mt-1  ">
                       คงเหลือ:{" "}
                       <sapn>
                         {" "}
                         {Number(userListSum?.pay_date).toLocaleString() == "NaN"
                           ? 0
-                          : Number(userListSum?.count_day - userListSum?.pay_date).toLocaleString()}
+                          : Number(
+                              userListSum?.count_day - userListSum?.pay_date
+                            ).toLocaleString()}
                       </sapn>{" "}
                       วัน
                     </Typography>
-                    <hr className="h-0.5 bg-gray-400 mt-1.5"/>
+                    <hr className="h-0.5 bg-gray-400 mt-1.5" />
                     <Typography className=" font-bold mt-1">
-                      ยอดรวม:{" "}
+                      ยอดยืม:{" "}
                       <sapn>
                         {" "}
                         {Number(userListSum?.total).toLocaleString() == "NaN"
                           ? 0
                           : Number(userListSum?.total).toLocaleString()}
+                      </sapn>{" "}
+                      บาท
+                    </Typography>
+                    <Typography className=" font-bold mt-1">
+                      ยอดสุทธิ:{" "}
+                      <sapn>
+                        {" "}
+                        {Number(userListSum?.newTotal).toLocaleString() == "NaN"
+                          ? 0
+                          : Number(userListSum?.newTotal).toLocaleString()}
                       </sapn>{" "}
                       บาท
                     </Typography>
@@ -1391,19 +1535,6 @@ const Process = () => {
                           : Number(userListSum?.overdue) < 0
                           ? 0
                           : Number(userListSum?.overdue).toLocaleString()}
-                      </sapn>{" "}
-                      บาท
-                    </Typography>
-                    <Typography className=" font-bold mt-1">
-                      กำไร:{" "}
-                      <sapn>
-                        {Number(userListSum?.overdue).toLocaleString() == "NaN"
-                          ? 0
-                          : Number(userListSum?.overdue) < 0
-                          ? Math.abs(
-                              Number(userListSum?.overdue)
-                            ).toLocaleString()
-                          : 0}
                       </sapn>{" "}
                       บาท
                     </Typography>
@@ -1562,8 +1693,9 @@ const Process = () => {
               <span>{Number(returnReload?.newSum).toLocaleString()}</span> บาท
             </Typography>
             <Typography className=" text-xl font-bold">
-            จำนวนเงินที่จ่ายเกิน{" "}
-              <span>{Number(returnReload?.qty_overpay).toLocaleString()}</span> บาท
+              จำนวนเงินที่จ่ายเกิน{" "}
+              <span>{Number(returnReload?.qty_overpay).toLocaleString()}</span>{" "}
+              บาท
             </Typography>
             {/* <Typography className=" text-xl font-bold">
               หักจากยอดเก่าคงเหลือ{" "}

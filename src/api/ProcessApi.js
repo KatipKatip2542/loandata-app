@@ -67,7 +67,7 @@ export const getUpdateAll = async (processId) => {
   }
 };
 
-export const getProcessUser = async (id, status) => {
+export const getProcessUser = async (id, status , searchQuery1 ) => {
   console.log(id)
   console.log(status)
   try {
@@ -75,7 +75,7 @@ export const getProcessUser = async (id, status) => {
     const response = await axios.get(
       `${
         import.meta.env.VITE_APP_API
-      }/api/process/user?process_id=${id}&status=${status}`,
+      }/api/process/user?process_id=${id}&status=${status}&search=${searchQuery1}`,
       {
         ...HeaderAPI(localStorage.getItem("Token")),
       }
@@ -87,13 +87,13 @@ export const getProcessUser = async (id, status) => {
 };
 
 
-export const getProcessUser1 = async (id) => {
+export const getProcessUser1 = async (id , searchQuery1) => {
   try {
     // let token = localStorage.getItem("Token")
     const response = await axios.get(
       `${
         import.meta.env.VITE_APP_API
-      }/api/process/user?process_id=${id}`,
+      }/api/process/user?process_id=${id}&search=${searchQuery1}`,
       {
         ...HeaderAPI(localStorage.getItem("Token")),
       }
@@ -116,7 +116,7 @@ export const getProcessUserList = async (id) => {
         ...HeaderAPI(localStorage.getItem("Token")),
       }
     );
-    // console.log(response)
+    console.log(response)
     return response;
   } catch (error) {
     return error
@@ -193,6 +193,21 @@ export const sendUpdate = async (data) => {
   try {
     const response = await axios.put(
       `${import.meta.env.VITE_APP_API}/api/process/user`,
+      data,
+      {
+        ...HeaderAPI(localStorage.getItem("Token")),
+      }
+    );
+    return response;
+  } catch (error) {
+    return error
+  }
+};
+
+export const sendClose = async (data) => {
+  try {
+    const response = await axios.put(
+      `${import.meta.env.VITE_APP_API}/api/process/user/end`,
       data,
       {
         ...HeaderAPI(localStorage.getItem("Token")),
