@@ -70,7 +70,7 @@ export function HomeAdmin() {
   }, []);
 
   const checkScreenSize = () => {
-    if (window.innerWidth < 960) {
+    if (window.innerWidth < 1024) {
       setCollapsed(true);
       setMenuSize(true)
     } else {

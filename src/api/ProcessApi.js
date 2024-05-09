@@ -116,7 +116,7 @@ export const getProcessUserList = async (id) => {
         ...HeaderAPI(localStorage.getItem("Token")),
       }
     );
-    console.log(response)
+    // console.log(response)
     return response;
   } catch (error) {
     return error
@@ -147,7 +147,7 @@ export const userUpdate = async (data) => {
         ...HeaderAPI(localStorage.getItem("Token")),
       }
     );
-    console.log(response)
+    // console.log(response)
     if(response.status === 200) {
       return response;
     }
@@ -223,6 +223,38 @@ export const sendReload = async (data) => {
   try {
     const response = await axios.put(
       `${import.meta.env.VITE_APP_API}/api/process/user/list/reload`,
+      data,
+      {
+        ...HeaderAPI(localStorage.getItem("Token")),
+      }
+    );
+    return response;
+  } catch (error) {
+    return error
+  }
+};
+
+export const sortUser = async (data ,id) => {
+  console.log(data)
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_API}/api/process/user/sort?process_id=${id}`,
+      data,
+      {
+        ...HeaderAPI(localStorage.getItem("Token")),
+      }
+    );
+    return response;
+  } catch (error) {
+    return error
+  }
+};
+
+export const clearUser = async (data) => {
+  console.log(data)
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_API}/api/process/user/clear`,
       data,
       {
         ...HeaderAPI(localStorage.getItem("Token")),

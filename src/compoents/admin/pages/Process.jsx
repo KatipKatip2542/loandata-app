@@ -8,7 +8,8 @@ import {
   DialogHeader,
   DialogFooter,
   Input,
-  Switch
+  Switch,
+  Radio,
 } from "@material-tailwind/react";
 // import { Switch } from "antd";
 
@@ -25,7 +26,7 @@ import moment from "moment/min/moment-with-locales";
 
 import { parse, addYears } from "date-fns";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import { useRecoilState, useRecoilValue } from "recoil";
 
@@ -43,6 +44,8 @@ import { IoIosSave } from "react-icons/io";
 import { TbReload } from "react-icons/tb";
 import { MdSmsFailed, MdCancel } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
+import { LuTimerReset } from "react-icons/lu";
+import { RiShutDownLine, RiDeleteBin6Fill } from "react-icons/ri";
 
 import {
   getProcess,
@@ -58,18 +61,21 @@ import {
   sendUpdate,
   sendReload,
   sendClose,
+  sortUser,
+  clearUser,
 } from "../../../api/ProcessApi";
 import { getCustomer } from "../../../api/customerApi";
+import { editLocation } from "../../../api/locationApi";
 
 const Process = () => {
   //----------  Data Table --------------------//
   const [listData, setListData] = useState([]);
   const [searchQuery1, setSearchQuery1] = useState("");
   const [dataProcessId, setDataProcessId] = useState([]);
-  const [activeCustomerMenu, setActiveCustomerMenu] = useState("menu1");
+  const [activeCustomerMenu, setActiveCustomerMenu] = useState("menu2");
   const [sumUser, setSumUser] = useState([]);
 
-  const [disableInput ,setDisableInput] = useState(false)
+  const [disableInput, setDisableInput] = useState(false);
 
   const [customerDataStore, setCustomerDataStore] =
     useRecoilState(customerStore);
@@ -88,16 +94,6 @@ const Process = () => {
   const [userListSum, setUserListSum] = useState([]);
   const [userListData, setUserListData] = useState([]);
   const [disableButton, setDisableButton] = useState(true);
-
-  // const [selectedShop, setSelectedShop] = useState(null);
-
-  // const handleShopSelect = (e) => {
-  // ค้นหาข้อมูลลูกค้าที่ถูกเลือกจาก customerDataStore
-  // const shop = shopDataStore.find((shop) => shop.id === e.value);
-  // เซ็ตข้อมูลลูกค้าที่ถูกเลือกใน state
-  // console.log(shop);
-  // setSelectedShop(shop);
-  // };
 
   const locationDataStore = useRecoilValue(locationStore);
 
@@ -211,29 +207,27 @@ const Process = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataProcessStore?.id, searchQuery1]);
 
-  const fetchStatus1 = async () => {
-    try {
-      const response = await getProcessUser1(
-        dataProcessStore?.id,
-        searchQuery1
-      );
-      // console.log(response);
-      if (response?.status == 200) {
-        setListDataCustomer(response.data);
-      } else {
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const fetchStatus1 = async () => {
+  //   try {
+  //     const response = await getProcessUser1(
+  //       dataProcessStore?.id,
+  //       searchQuery1
+  //     );
+  //     // console.log(response);
+  //     if (response?.status == 200) {
+  //       setListDataCustomer(response.data);
+  //     } else {
+  //       return;
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchStatus1();
-    // if (dataProcessStore?.id) {
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataProcessStore?.id, searchQuery1]);
+  // useEffect(() => {
+  //   fetchStatus1();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [dataProcessStore?.id, searchQuery1]);
 
   const [userId, setUserId] = useState("");
 
@@ -279,12 +273,13 @@ const Process = () => {
 
   const totalPages = Math.ceil(listDataCustomer?.length / itemsPerPage);
 
-  //------------- modal Add Process -----------------------//
+  //------------- modal  -----------------------//
 
   const [openModalAddProcess, setOpenModalAddProcess] = useState(false);
   const [openModalConfirm, setOpenModalConfirm] = useState(false);
   const [openModalReload, setOpenModalReload] = useState(false);
   const [openModalDataReload, setOpenModalDataReload] = useState(false);
+  const [openModalClearUser, setOpenModalClearUser] = useState(false);
 
   const handleModalAddProcess = () => {
     setOpenModalAddProcess(!openModalAddProcess);
@@ -303,6 +298,15 @@ const Process = () => {
     setOpenModalDataReload(!openModalDataReload);
     // setOpenModalAddProcess(false);
   };
+
+  const [userData, setUserData] = useState([]);
+
+  const handleModalClearUser = (data) => {
+    setOpenModalClearUser(!openModalClearUser);
+    setUserData(data);
+  };
+
+  console.log(userData);
 
   const handleAddProcess = async () => {
     try {
@@ -414,11 +418,9 @@ const Process = () => {
 
   // Handle change for daysToAdd
   const handleDaysToAddChange = (event) => {
-    const inputValue = event.target.value  || 0;
+    const inputValue = event.target.value || 0;
     const newDaysToAdd = parseInt(inputValue, 10);
     setAmountDate(newDaysToAdd);
-
-
 
     // if (searchQueryStart) {
     //   setSearchQueryEnd(addDays(searchQueryStart, newDaysToAdd));
@@ -431,14 +433,18 @@ const Process = () => {
   const startEnd = moment(searchQueryEnd).format("YYYY-MM-DD");
   const dateSend = moment(changeDate).format("YYYY-MM-DD");
 
-  // console.log(changeDate)
-  // console.log(dateCancel)
-  console.log(listDataCustomer)
+  console.log(listDataCustomer);
 
   const handleChangeStatus = async (changestatus, dataed) => {
     try {
       // console.log(dateSend);
-      if (dateSend == "Invalid date" && price == null || price < 0  || price == null || price < 0) {
+      if (
+        dateSend == "Invalid date" ||
+        ("" && price == null) ||
+        price < 0 ||
+        price == null ||
+        price < 0
+      ) {
         toast.error("กรุณาระบบวันที่ และ  จำนวนเงิน");
       } else {
         let data = {
@@ -447,7 +453,7 @@ const Process = () => {
           price: price,
           process_user_id: userId,
           process_id: dataProcessStore?.id,
-          date: dateSend == 'Invalid date' ? null : dateSend ,
+          date: dateSend == "Invalid date" ? null : dateSend,
           status_count: dataed?.status_count,
         };
         console.log(data);
@@ -494,7 +500,6 @@ const Process = () => {
     }
   };
 
-  // const [dateUpdate ,setDateUpdate] = useState('')
   const handleUpdate = async () => {
     console.log(statusValue.value);
     try {
@@ -522,9 +527,10 @@ const Process = () => {
           setSearchQueryStart(new Date()),
           setSearchQueryEnd(new Date()),
           setUserListData([]);
-        // setDisableButton(false)
+
+        // setSumUser([]);
+        // setActiveRow("");
       } else {
-        // toast.error("เปลี่ยนสถานะ ไม่สำเร็จ");
         toast.error(response?.response?.data);
       }
     } catch (error) {
@@ -546,7 +552,7 @@ const Process = () => {
       if (response?.status == 200) {
         toast.success("ปิดยอด สำเร็จ");
         setReturnReload(response?.data);
-        fetchUserList()
+        fetchUserList();
         // handleModalDataReload();
         handleFetch();
       } else {
@@ -559,25 +565,46 @@ const Process = () => {
   };
 
   const [returnReload, setReturnReload] = useState([]);
+  const [newPrice, setNewPrice] = useState(0);
+  // const [radio, setRadio] = useState(0);
+  // console.log(radio);
 
   const handleReload = async () => {
-
-    console.log(userListData)
+    // console.log(userListData);
     try {
       let data = {
         process_user_id: userId,
-        process_id: dataProcessStore?.id, 
+        process_id: dataProcessStore?.id,
         price: userListData?.total,
+        new_price: Number(newPrice) || userListData?.total,
         count_day: userListData?.count_day,
+        // status: Number(radio)
       };
-
+      console.log(data);
       const response = await sendReload(data);
       console.log(response?.data);
       if (response?.status == 200) {
         toast.success("รียอด สำเร็จ");
         setReturnReload(response?.data);
         handleModalDataReload();
-        handleFetch();
+        // handleFetch();
+        setNewPrice(0);
+        fetchStatus(0);
+        fetchUserListSum(userId);
+        fetchUpdateAll(dataProcessStore?.id);
+
+        // reset
+        setSumUser([]);
+        setSelectDisable(0),
+          setSelectedValue(null),
+          setStatusValue(null),
+          setAmount(0),
+          setAmountDate(0),
+          setSearchQueryStart(new Date()),
+          setSearchQueryEnd(new Date()),
+          setUserListData([]);
+        setActiveRow("");
+        // setRadio(0);
       } else {
         toast.error(response?.response?.data);
         handleModalReload();
@@ -589,15 +616,11 @@ const Process = () => {
 
   const handleFetch = () => {
     fetchUpdateAll(dataProcessStore?.id);
-    fetchStatus1();
+    // fetchStatus1();
+    fetchStatus(0);
     fetchUserList(userId);
     fetchUserListSum(userId);
   };
-
-  // console.log(dataProcessStore.id);
-  // console.log(listDataCustomer)
-  // console.log(sumUser);
-  // console.log(price)
 
   const handleChangeSwitch = (index, checked) => {
     // คัดลอก sumUser และอัพเดทค่า status_count ตาม checked ใหม่
@@ -618,21 +641,128 @@ const Process = () => {
     // ทำอะไรสิ่งที่คุณต้องการต่อที่นี่ เช่น ส่งข้อมูลไปยัง backend
   };
 
-  console.log(sumUser);
-  console.log(disableButton)
+  // console.log(disableButton);
+
+  const checkInputDate = (e, index) => {
+    const date = moment(e.target.value).add(+543, "years").format("DD-MM-YYYY");
+    if (sumUser.some((item) => item.date === date)) {
+      toast.error(`วันที่ ${date} มีอยู่แล้ว`);
+      const newInputDates = [...changeDate];
+      newInputDates[index] = "";
+      document.getElementById("myInput").value = "";
+      setChangeDate("");
+    } else {
+      // const newInputDates = [...changeDate];
+      // newInputDates[index] =e.target.value
+      // console.log(newInputDates[index])
+      setChangeDate(e.target.value);
+    }
+  };
+
+  const dragItem = useRef(null);
+  const dragItemOver = useRef(null);
+
+  // handle drag sorting
+  const handleSort = async () => {
+    try {
+      // duplicate items
+      let _listDataCustomer = [...listDataCustomer];
+
+      //remove and save the dragged item  contect
+      const graggedItemContent = _listDataCustomer.splice(
+        dragItem.current,
+        1
+      )[0];
+
+      // switch the position
+      _listDataCustomer.splice(dragItemOver.current, 0, graggedItemContent);
+
+      // reset the position
+      dragItem.current = null;
+      dragItemOver.current = null;
+
+      // update the actual array
+
+      const data = {
+        sort_data: _listDataCustomer.map((item, index) => ({
+          index: index + 1,
+          id: item.id,
+        })),
+      };
+      const response = await sortUser(data, dataProcessStore?.id);
+      console.log(response?.status);
+      if (response?.status == 200) {
+        fetchStatus();
+        toast.success("ทำรายการสำเร็จ");
+        // reset Status
+        setSelectDisable(0),
+          setSelectedValue(null),
+          setStatusValue(null),
+          setAmount(0),
+          setAmountDate(0),
+          setSearchQueryStart(new Date()),
+          setSearchQueryEnd(new Date()),
+          setUserListData([]);
+        setSumUser([]);
+        setActiveRow("");
+      }
+    } catch (error) {
+      // toast.error(error);
+    }
+  };
+
+  const handleClearUser = async (userData) => {
+    try {
+      const data = {
+        id: userId,
+        process_id: dataProcessStore?.id,
+        price: userData?.price,
+        count_day: userData?.count_day,
+      };
+      const response = await clearUser(data);
+      console.log(response?.status);
+      if (response?.status == 200) {
+        fetchStatus();
+        fetchUpdateAll();
+        handleModalClearUser();
+        toast.success("ลบข้อมูลสำเร็จ");
+
+        // reset Status
+        setSelectDisable(0),
+          setSelectedValue(null),
+          setStatusValue(null),
+          setAmount(0),
+          setAmountDate(0),
+          setSearchQueryStart(new Date()),
+          setSearchQueryEnd(new Date()),
+          setUserListData([]);
+        setUserListSum([]);
+        setSumUser([]);
+        setActiveRow("");
+      }
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+
+  // console.log(dataProcessStore.id);
+  // console.log(listDataCustomer)
+  // console.log(sumUser);
+  // console.log(price)
 
   return (
     <Card>
       <div className="flex flex-col w-full mt-1 px-2 ">
         <ToastContainer className="toast " autoClose={2500} theme="colored" />
         <div className="flex   flex-col  overflow-auto   items-center ">
-          <div className="flex w-full flex-col md:flex-row gap-5 ">
-            <div className="flex flex-col w-full h-[85vh] md:w-4/12 xl:w-3/12  ">
-              <div className="flex  items-center justify-between gap-3 ">
+          <div className="flex w-full flex-col lg:flex-row gap-5 ">
+            <div className="flex flex-col w-full h-[85vh] lg:w-4/12 xl:w-3/12    ">
+              <div className="flex  items-center justify-between gap-3  ">
                 <div>
                   <Typography className="text-lg lg:text-xl font-bold">
                     {dataProcessStore?.name || ""}
                   </Typography>
+                  {/* <button onClick={() => fetchUpdateAll(dataProcessStore?.id)}>test</button> */}
                 </div>
                 <div>
                   <Button
@@ -678,7 +808,7 @@ const Process = () => {
                       type="number"
                       min={0}
                       value={amount}
-                      disabled={disableInput }
+                      disabled={disableInput}
                       className="peer w-[100%] h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 disabled:cursor-not-allowed transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent placeholder:opacity-0 focus:placeholder:opacity-100 text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-blue-gray-500 "
                       style={{ backgroundColor: "rgb(244,244,244)" }}
                       onChange={(e) => setAmount(e.target.value)}
@@ -723,33 +853,7 @@ const Process = () => {
                 />
               </div>
 
-              {/* <div className="flex w-full flex-col lg:flex-row justify-center mt-3 gap-3  ">
-                  <div className="w-full lg:w-[50%]">
-                    <div className=" relative w-full min-w-[100px] h-10">
-                      <DatePicker
-                        selected={searchQueryStart}
-                        disabled={selectDisable}
-                        locale={th}
-                        dateFormat="เริ่มต้น dd/MM/yyyy"
-                        onChange={handleSearchQueryStartChange}
-                        className="w-full rounded-md border border-gray-400 p-2 text-gray-600  shadow-sm focus:border-blue-500 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full lg:w-[50%]">
-                    <div className=" relative w-full min-w-[100px] h-10">
-                      <DatePicker
-                        selected={searchQueryEnd}
-                        disabled
-                        locale={th}
-                        dateFormat="สิ้นสุด dd/MM/yyyy"
-                        onChange={(date) => setSearchQueryEnd(date)}
-                        className="w-full rounded-md border border-gray-400 p-2 text-gray-600  shadow-sm focus:border-blue-500 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                </div> */}
-              <div className="flex flex-col w-full justify-center mt-5 gap-3  ">
+              <div className="flex flex-col  w-full justify-center mt-5 gap-3  ">
                 <div className="flex gap-5 ">
                   <div className="w-full ">
                     <Button
@@ -788,7 +892,7 @@ const Process = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-5 ">
+                <div className="flex gap-5 flex-col xl:flex-row ">
                   <div className="w-full ">
                     <Button
                       size="sm"
@@ -804,7 +908,7 @@ const Process = () => {
                       onClick={handleClose}
                     >
                       <span className="mr-2 text-xl ">
-                        <MdSmsFailed />
+                        <RiShutDownLine />
                       </span>
                       ปิดยอด
                     </Button>
@@ -829,7 +933,7 @@ const Process = () => {
 
               <div className="flex w-full flex-col h-full mt-4 2xl:mt-[20px]   ">
                 <div
-                  className=" lg:mt-[145px] xl:mt-[4px] sm:mt-0 md:mt-[18px] md:h-[400px]  2xl:mt-0 p-3   lg:h-[350px] xl:h-[273px] 2xl:h-[240px] items-center rounded-md    mb-2 "
+                  className=" lg:mt-[15px] xl:mt-[4px] sm:mt-0 md:mt-[18px]  md:h-[180px]  2xl:mt-0 p-3   lg:h-[300px] xl:h-[228px] 2xl:h-[240px] items-center rounded-md    mb-2 "
                   style={{ border: "2px solid #b3b3b3" }}
                 >
                   <Typography className="text-xl font-bold ">
@@ -867,10 +971,10 @@ const Process = () => {
                 </div>
               </div>
             </div>
-            <div className="flex w-full flex-col  gap-3 md:w-8/12 xl:w-9/12 ">
-              <div className=" flex flex-col xl:flex-row  items-center sm:items-start  w-full justify-center md:justify-start    gap-5  ">
-                <div className="flex flex-col  xl:flex-row gap-5">
-                  <div className="flex gap-5">
+            <div className="flex w-full flex-col  gap-3  lg:w-8/12 xl:w-9/12 ">
+              <div className=" flex flex-col xl:flex-row  items-center sm:items-start  w-full justify-center md:justify-start   gap-5  ">
+                {/* <div className="flex flex-col  xl:flex-row gap-5"> */}
+                {/* <div className="flex gap-5 lg:ml-5 ">
                     <div className=" justify-center">
                       <Button
                         size="sm"
@@ -891,73 +995,72 @@ const Process = () => {
                         ทั้งหมด
                       </Button>
                     </div>
-                    <div className=" justify-center">
-                      <Button
-                        size="sm"
-                        variant="outlined"
-                        className={`w-[150px] rounded-md py-2  px-4 shadow-lg border border-gray-400  text-white text-sm `}
-                        style={{
-                          backgroundColor:
-                            activeCustomerMenu === "menu2"
-                              ? "#ff9800"
-                              : "#fdaf3d",
-                        }}
-                        onClick={() => [
-                          setActiveCustomerMenu("menu2"),
-                          fetchStatus(0),
-                          setDisableButton(true),
-                          setSumUser([]),
-                          setActiveRow(),
-                        ]}
-                      >
-                        กำลังจ่าย
-                      </Button>
-                    </div>
+                  </div> */}
+                <div className="flex w-full flex-col justify-center lg:justify-start lg:ml-3 sm:mt-5 sm:flex-row md:mt-16 lg:mt-0   gap-5">
+                  <div className=" flex justify-center">
+                    <Button
+                      size="sm"
+                      variant="outlined"
+                      className={`w-[150px] rounded-md py-2  px-4 shadow-lg border border-gray-400  text-white text-sm `}
+                      style={{
+                        backgroundColor:
+                          activeCustomerMenu === "menu2"
+                            ? "#ff9800"
+                            : "#fdaf3d",
+                      }}
+                      onClick={() => [
+                        setActiveCustomerMenu("menu2"),
+                        fetchStatus(0),
+                        setDisableButton(true),
+                        setSumUser([]),
+                        setActiveRow(),
+                      ]}
+                    >
+                      กำลังจ่าย
+                    </Button>
                   </div>
-
-                  <div className="flex gap-5">
-                    <div className=" justify-center">
-                      <Button
-                        size="sm"
-                        variant="outlined"
-                        className={`w-[150px] rounded-md py-2  px-4 shadow-lg border border-gray-400  ${
-                          activeCustomerMenu === "menu3"
-                            ? " bg-green-500 text-white text-sm"
-                            : "bg-green-300 text-white text-sm"
-                        }`}
-                        onClick={() => [
-                          setActiveCustomerMenu("menu3"),
-                          fetchStatus(1),
-                          setDisableButton(false),
-                          setSumUser([]),
-                          setActiveRow(),
-                        ]}
-                      >
-                        จ่ายครบแล้ว
-                      </Button>
-                    </div>
-                    <div className=" justify-center">
-                      <Button
-                        size="sm"
-                        variant="outlined"
-                        className={`w-[150px] rounded-md py-2  px-4 shadow-lg border border-gray-400  ${
-                          activeCustomerMenu === "menu4"
-                            ? " bg-red-500 text-white text-sm"
-                            : "bg-red-300 text-white text-sm"
-                        }`}
-                        onClick={() => [
-                          setActiveCustomerMenu("menu4"),
-                          fetchStatus(2),
-                          setDisableButton(false),
-                          setSumUser([]),
-                          setActiveRow(),
-                        ]}
-                      >
-                        ลูกค้าเสีย
-                      </Button>
-                    </div>
+                  <div className=" flex justify-center">
+                    <Button
+                      size="sm"
+                      variant="outlined"
+                      className={`w-[150px] rounded-md py-2  px-4 shadow-lg border border-gray-400  ${
+                        activeCustomerMenu === "menu3"
+                          ? " bg-green-500 text-white text-sm"
+                          : "bg-green-300 text-white text-sm"
+                      }`}
+                      onClick={() => [
+                        setActiveCustomerMenu("menu3"),
+                        fetchStatus(1),
+                        setDisableButton(false),
+                        setSumUser([]),
+                        setActiveRow(),
+                      ]}
+                    >
+                      จ่ายครบแล้ว
+                    </Button>
+                  </div>
+                  <div className=" flex justify-center">
+                    <Button
+                      size="sm"
+                      variant="outlined"
+                      className={`w-[150px] rounded-md py-2  px-4 shadow-lg border border-gray-400  ${
+                        activeCustomerMenu === "menu4"
+                          ? " bg-red-500 text-white text-sm"
+                          : "bg-red-300 text-white text-sm"
+                      }`}
+                      onClick={() => [
+                        setActiveCustomerMenu("menu4"),
+                        fetchStatus(2),
+                        setDisableButton(false),
+                        setSumUser([]),
+                        setActiveRow(),
+                      ]}
+                    >
+                      ลูกค้าเสีย
+                    </Button>
                   </div>
                 </div>
+                {/* </div> */}
               </div>
               <div>
                 <Card
@@ -1018,7 +1121,7 @@ const Process = () => {
                               จำนวนวัน
                             </Typography>
                           </th>
-                          <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-2">
+                          <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-2 w-[100px]">
                             <Typography
                               variant="small"
                               color="blue-gray"
@@ -1027,13 +1130,22 @@ const Process = () => {
                               สถานะ
                             </Typography>
                           </th>
-                          <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-2">
+                          <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-2 w-1">
                             <Typography
                               variant="small"
                               color="blue-gray"
                               className="font-bold leading-none opacity-70"
                             >
                               เลือก
+                            </Typography>
+                          </th>
+                          <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-2 w-[70px] ">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-bold leading-none opacity-70"
+                            >
+                              ลบ
                             </Typography>
                           </th>
                         </tr>
@@ -1058,7 +1170,16 @@ const Process = () => {
                                   index === activeRow ? "bg-gray-300" : ""
                                 }`;
                             return (
-                              <tr key={index}>
+                              <tr
+                                key={index}
+                                draggable
+                                onDragStart={() => (dragItem.current = index)}
+                                onDragEnter={() =>
+                                  (dragItemOver.current = index)
+                                }
+                                onDragEnd={handleSort}
+                                onDragOver={(e) => e.preventDefault}
+                              >
                                 <td className={classes}>
                                   <div className="flex items-center justify-center">
                                     <Typography
@@ -1075,7 +1196,56 @@ const Process = () => {
                                     <Typography
                                       variant="small"
                                       color="blue-gray"
-                                      className=" "
+                                      className=" font-bold text-purple-500 cursor-pointer"
+                                      onClick={() => [
+                                        setActiveRow(index),
+                                        fetchUserList(data?.id, data?.status),
+                                        setSumUser([]),
+                                        setUserListData(data),
+                                        fetchUserListSum(data?.id),
+                                        setDisableInput(
+                                          data?.status == 2 ? true : false
+                                        ),
+                                        setDisableButton(
+                                          data?.status == 2 ? true : false
+                                        ),
+                                        setSelectedValue(data),
+                                        setStatusValue({
+                                          ...statusValue,
+                                          value: data?.status,
+                                          label:
+                                            data?.status == 0
+                                              ? "กำลังจ่าย"
+                                              : "ลูกค้าเสีย",
+                                        }),
+                                        setSelectedValue({
+                                          ...selectedValue,
+                                          label: data?.name,
+                                        }),
+                                        setSelectDisable(1),
+                                        setAmount(data?.total),
+                                        setAmountDate(data?.count_day),
+                                        setSearchQueryStart(
+                                          addYears(
+                                            parse(
+                                              data?.start_day,
+                                              "dd-MM-yyyy",
+                                              new Date()
+                                            ),
+                                            +543
+                                          )
+                                        ),
+                                        setSearchQueryEnd(
+                                          addYears(
+                                            parse(
+                                              data?.end_day,
+                                              "dd-MM-yyyy",
+                                              new Date()
+                                            ),
+                                            -543
+                                          )
+                                        ),
+                                      ]}
                                     >
                                       {data?.name}
                                     </Typography>
@@ -1146,14 +1316,10 @@ const Process = () => {
                                         setUserListData(data),
                                         fetchUserListSum(data?.id),
                                         setDisableInput(
-                                          data?.status == 2
-                                            ? true
-                                            : false
+                                          data?.status == 2 ? true : false
                                         ),
                                         setDisableButton(
-                                          data?.status == 2
-                                            ? true
-                                            : false
+                                          data?.status == 2 ? true : false
                                         ),
                                         setSelectedValue(data),
                                         setStatusValue({
@@ -1194,6 +1360,22 @@ const Process = () => {
                                       ]}
                                     >
                                       <BsFillEyeFill className="h-5 w-5  text-light-blue-700 " />
+                                    </IconButton>
+                                  </div>
+                                </td>
+                                <td className={classes}>
+                                  <div className="flex justify-center ">
+                                    <IconButton
+                                      variant="outlined"
+                                      color="blue"
+                                      size="sm"
+                                      onClick={() => [
+                                        setActiveRow(index),
+                                        handleModalClearUser(data),
+                                        setUserId(data.id),
+                                      ]}
+                                    >
+                                      <RiDeleteBin6Fill className="h-5 w-5  text-red-500 " />
                                     </IconButton>
                                   </div>
                                 </td>
@@ -1280,7 +1462,9 @@ const Process = () => {
                               const pageIndex = startIndex + index;
                               const classes = isLast
                                 ? "p-1"
-                                : `p-1 border-b border-blue-gray-50 ${data?.status == 1 ? "bg-gray-300" : ''} `;
+                                : `p-1 border-b border-blue-gray-50 ${
+                                    data?.status == 1 ? "bg-gray-300" : ""
+                                  } `;
                               return (
                                 <tr key={index}>
                                   <td className={classes}>
@@ -1299,10 +1483,15 @@ const Process = () => {
                                       <div className="flex items-center justify-center ">
                                         <input
                                           type="date"
+                                          id="myInput"
                                           className=" border-2 border-black text-center bg-gray-200 "
                                           placeholder="ระบุวันที่ DD-MM-YYY"
+                                          // value={data?.date || ''}
+                                          // onChange={(e) =>
+                                          //   setChangeDate(e.target.value)
+                                          // }
                                           onChange={(e) =>
-                                            setChangeDate(e.target.value)
+                                            checkInputDate(e, index)
                                           }
                                         />
                                       </div>
@@ -1643,12 +1832,49 @@ const Process = () => {
         open={openModalReload}
         handler={handleModalReload}
         size="xs"
-        className="h-[20vh] "
+        className="h-[25vh] "
       >
         <DialogHeader className="bg-purple-700 py-3  px-3  justify-center text-lg text-white opacity-80">
           <Typography variant="h5">ยืนยันการรียอด</Typography>
         </DialogHeader>
-        <DialogFooter className="flex justify-center gap-5 mt-3">
+        <DialogBody>
+          <div className="flex flex-col justify-center items-center ">
+            <div className="flex gap-3 justify-center   ">
+              <Typography>จำนวนเงิน:</Typography>
+              <input
+                type="number"
+                className=" border-2 w-[100px] border-black text-center bg-gray-200  "
+                value={newPrice || userListData?.total}
+                min="0"
+                // onChange={(e) =>
+                //   setUserListData({
+                //     ...userListData,
+                //     total: Number(e.target.value),
+                //   })
+                // }
+                onChange={(e) => setNewPrice(e.target.value)}
+              />
+            </div>
+            {/* <div className="flex gap-10  justify-center mt-3  ">
+              <Radio
+                name="type"
+                label="ปกติ"
+                color="green"
+                onClick={() => setRadio(0)}
+                className="bg-gray-300 items-center border-b-2 "
+                defaultChecked
+              />
+              <Radio
+                name="type"
+                label="ชำระล่วงหน้า"
+                color="green"
+                onClick={() => setRadio(1)}
+                className="bg-gray-300 items-center border-b-2"
+              />
+            </div> */}
+          </div>
+        </DialogBody>
+        <DialogFooter className="flex justify-center gap-5 ">
           <Button
             variant="text"
             color="red"
@@ -1719,6 +1945,55 @@ const Process = () => {
               <CiLogout />
             </span>
             ปิด
+          </Button>
+        </DialogFooter>
+      </Dialog>
+
+      {/* modal Clear User  */}
+      <Dialog
+        open={openModalClearUser}
+        handler={handleModalClearUser}
+        size="xs"
+        className="h-[35vh] "
+      >
+        <DialogHeader className="bg-red-700 py-3  px-3  justify-center text-lg text-white opacity-80">
+          <Typography variant="h5">ยืนยันการลบข้อมูล</Typography>
+        </DialogHeader>
+        <DialogBody divider className=" h-[15vh]">
+          <div className=" w-full  flex flex-col text-center justify-center mt-3 gap-3 ">
+            <Typography className=" text-xl font-bold">
+              ข้อมูลจะถูกเริ่มต้นใหม่ทั้งหมด{" "}
+              <span className="text-red-500 underline">{`(เฉพาะคุณ ${userData?.name})`}</span>{" "}
+            </Typography>
+            <Typography className=" text-xl font-bold">
+              ข้อมูลรายงานรียอดจะถูกลบ{" "}
+            </Typography>
+          </div>
+        </DialogBody>
+        <DialogFooter className="flex justify-center gap-5">
+          <Button
+            size="md"
+            variant="gradient"
+            color="gray"
+            onClick={handleModalClearUser}
+            className="flex text-base mr-1 w-[130px] items-center justify-center"
+          >
+            <span className="mr-2 text-xl">
+              <CiLogout />
+            </span>
+            ปิด
+          </Button>
+          <Button
+            size="sm"
+            variant="gradient"
+            color="red"
+            onClick={() => handleClearUser(userData)}
+            className="flex text-base mr-1"
+          >
+            <span className="mr-2 text-xl">
+              <FaRegSave />
+            </span>
+            รีเซทข้อมูล
           </Button>
         </DialogFooter>
       </Dialog>

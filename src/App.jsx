@@ -9,7 +9,6 @@ function App() {
 
   let Token = localStorage.getItem("Token");
  
-
   return (
     <div>
     {Token ? (

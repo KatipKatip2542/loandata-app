@@ -32,8 +32,12 @@ import {
 
 import { useRecoilState } from "recoil";
 
-import { locationStore, activeMenuStore , customerIdStore , processStore } from "../../../store/Store";
-
+import {
+  locationStore,
+  activeMenuStore,
+  customerIdStore,
+  processStore,
+} from "../../../store/Store";
 
 import { Link } from "react-router-dom";
 
@@ -42,13 +46,12 @@ const Location = () => {
 
   const [listData, setListData] = useState([]);
 
-  const [activeCustomerMenu, setActiveCustomerMenu] = useRecoilState(activeMenuStore);
+  const [activeCustomerMenu, setActiveCustomerMenu] =
+    useRecoilState(activeMenuStore);
   const [customerId, setCustomerId] = useRecoilState(customerIdStore);
-  const [dataProcessStore , setDataProcessStore] = useRecoilState(processStore)
- 
+  const [dataProcessStore, setDataProcessStore] = useRecoilState(processStore);
 
-
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [dataLocationStore, setDataLocationStore] =
     useRecoilState(locationStore);
 
@@ -56,7 +59,7 @@ const Location = () => {
     try {
       const response = await getLocation(searchQuery);
 
-      console.log(response)
+      console.log(response);
       setListData(response);
       setDataLocationStore(response);
     } catch (error) {
@@ -100,7 +103,7 @@ const Location = () => {
       };
 
       const response = await addLocation(data);
-      console.log(response?.response)
+      console.log(response?.response);
       if (response?.response?.status == 500) {
         setOpenModalAdd(false);
         toast.error(response?.response?.data?.message);
@@ -172,11 +175,11 @@ const Location = () => {
       <ToastContainer className="mt-10" autoClose={800} theme="colored" />
       <div className="flex flex-col w-full">
         {/* <p>ข้อมูลผู้บริจาค</p> */}
-        <div className="w-full  flex  flex-col-reverse items-center md:flex-row justify-center sm:justify-between  ">
-          <div className="w-full md:w-[50%] flex mt-5   px-0 md:mx-10 ">
+        <div className="w-full  flex   flex-col-reverse items-center md:flex-row justify-center sm:justify-between  ">
+          <div className="w-full md:w-[30%] flex mt-5 lg:mt-0  px-0 md:mx-10  ">
             <Typography className=" font-bold ">ข้อมูลสถานที่</Typography>
           </div>
-          <div className="w-full md:w-[50%] flex   px-0 md:px-10">
+          <div className="w-full md:w-[60%] flex   px-0 lg:px-5">
             <div className="w-full flex flex-col md:flex-row justify-center md:justify-end items-center gap-5">
               <div>
                 <Input
@@ -194,7 +197,7 @@ const Location = () => {
                   size="sm"
                   variant="gradient"
                   color="green"
-                  className="text-base flex justify-center  items-center   bg-green-500"
+                  className="text-base  flex justify-center  items-center   bg-green-500"
                   onClick={handleModalAdd}
                 >
                   <span className="mr-2 text-xl">
@@ -266,7 +269,7 @@ const Location = () => {
                       รายงาน
                     </Typography>
                   </th>
-                  <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 w-1  ">
+                  <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 w-[100px]  ">
                     <Typography
                       variant="small"
                       color="blue-gray"
@@ -307,10 +310,17 @@ const Location = () => {
                             </Typography>
                           </div>
                         </td>
-                        <td className={classes}   >
+                        <td className={classes}>
                           <div className="flex items-center justify-center ">
-                            <Link to="/admin/process" className="text-purple-500 font-bold" onClick={() => [setCustomerId(data?.id), setDataProcessStore(data)]} >
-                            {/* <Button
+                            <Link
+                              to="/admin/process"
+                              className="text-purple-500 font-bold"
+                              onClick={() => [
+                                setCustomerId(data?.id),
+                                setDataProcessStore(data),
+                              ]}
+                            >
+                              {/* <Button
                               variant="small"
                               // color="blue-gray"
                               className="font-normal text-sm p-2   "
@@ -318,7 +328,7 @@ const Location = () => {
                               onClick={() => [setCustomerId(data?.id), setDataProcessStore(data)]}
                             >
                           </Button> */}
-                          {data?.name || ""}
+                              {data?.name || ""}
                             </Link>
                           </div>
                         </td>
@@ -348,7 +358,10 @@ const Location = () => {
                           <div className="flex justify-center  px-3 gap-2 ">
                             <Link
                               to="/admin/customer"
-                              onClick={() => [setCustomerId(data?.id) , setDataProcessStore(data)]}
+                              onClick={() => [
+                                setCustomerId(data?.id),
+                                setDataProcessStore(data),
+                              ]}
                             >
                               <FaCircleUser className="h-6 w-6  text-blue-700 " />
                             </Link>
@@ -358,7 +371,10 @@ const Location = () => {
                           <div className="flex justify-center  px-3 gap-2">
                             <Link
                               to="/admin/report"
-                              onClick={() => [setCustomerId(data?.id) , setDataProcessStore(data)]}
+                              onClick={() => [
+                                setCustomerId(data?.id),
+                                setDataProcessStore(data),
+                              ]}
                             >
                               <TbReportAnalytics className="h-6 w-6  text-green-700 " />
                             </Link>
