@@ -1954,7 +1954,7 @@ const Process = () => {
         open={openModalClearUser}
         handler={handleModalClearUser}
         size="xs"
-        className="h-[35vh] "
+        className="h-[39vh] "
       >
         <DialogHeader className="bg-red-700 py-3  px-3  justify-center text-lg text-white opacity-80">
           <Typography variant="h5">ยืนยันการลบข้อมูล</Typography>
@@ -1963,8 +1963,8 @@ const Process = () => {
           <div className=" w-full  flex flex-col text-center justify-center mt-3 gap-3 ">
             <Typography className=" text-xl font-bold">
               ข้อมูลจะถูกเริ่มต้นใหม่ทั้งหมด{" "}
-              <span className="text-red-500 underline">{`(เฉพาะคุณ ${userData?.name})`}</span>{" "}
             </Typography>
+            <Typography className="text-red-500 underline">{`(เฉพาะคุณ ${userData?.name})`}</Typography>
             <Typography className=" text-xl font-bold">
               ข้อมูลรายงานรียอดจะถูกลบ{" "}
             </Typography>
