@@ -1970,7 +1970,7 @@ const Process = () => {
             </Typography>
           </div>
         </DialogBody>
-        <DialogFooter className="flex justify-center gap-5">
+        <DialogFooter className="flex justify-center gap-5 mt-5">
           <Button
             size="md"
             variant="gradient"
