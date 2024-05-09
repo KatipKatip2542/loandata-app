@@ -27,6 +27,7 @@ import { useRecoilValue } from "recoil";
 import { processStore } from "../../../store/Store";
 
 import ReportPdf from "./ReportPdf";
+import { BsNutFill } from "react-icons/bs";
 
 const Refund = () => {
   const [listData, setListData] = useState([]);
@@ -599,7 +600,7 @@ const Refund = () => {
                               <Typography
                                 variant="small"
                                 color="blue-gray"
-                                className={`font-normal ${data?.date == "0000-00-00" ? "bg-purple-500 px-2 py-1 text-purple-500  rounded-md bg-opacity-20" : '' } `}
+                                className={`font-normal ${data?.date == null ? "bg-purple-500 px-2 py-1 text-purple-500  rounded-md bg-opacity-20" : '' } `}
                               >
                                 {data?.date == null
                                   ? "จ่ายล่วงหน้า"
