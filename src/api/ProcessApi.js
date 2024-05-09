@@ -68,8 +68,8 @@ export const getUpdateAll = async (processId) => {
 };
 
 export const getProcessUser = async (id, status , searchQuery1 ) => {
-  console.log(id)
-  console.log(status)
+  // console.log(id)
+  // console.log(status)
   try {
     // let token = localStorage.getItem("Token")
     const response = await axios.get(
@@ -235,7 +235,7 @@ export const sendReload = async (data) => {
 };
 
 export const sortUser = async (data ,id) => {
-  console.log(data)
+  // console.log(data)
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_APP_API}/api/process/user/sort?process_id=${id}`,
@@ -251,7 +251,7 @@ export const sortUser = async (data ,id) => {
 };
 
 export const clearUser = async (data) => {
-  console.log(data)
+  // console.log(data)
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_APP_API}/api/process/user/clear`,

@@ -44,7 +44,7 @@ const Refund = () => {
       };
 
       const respone = await getRefund(data);
-      console.log(respone);
+      // console.log(respone);
       setListData(respone);
     } catch (error) {
       toast.error(error);
@@ -60,7 +60,7 @@ const Refund = () => {
   const fecthRefundDetail = async (id) => {
     try {
       const respone = await getRefundTable(id);
-      console.log(respone);
+      // console.log(respone);
       setTableView(respone.data);
     } catch (error) {
       toast.error(error);
@@ -79,7 +79,7 @@ const Refund = () => {
 
   const totalPages = Math.ceil(listData?.length / itemsPerPage);
 
-  console.log(listData)
+  // console.log(listData)
 
   //------------- modal View -----------------------//
   const [openModalView, setOpenModalView] = useState(false);
@@ -119,8 +119,8 @@ const Refund = () => {
   // }, [searchQuery, searchQuery1]);
 
   // console.log(dataPdf)
-  console.log(totalPages)
-  console.log(tableView)
+  // console.log(totalPages)
+  // console.log(tableView)
 
   return (
     <div>

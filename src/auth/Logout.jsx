@@ -22,7 +22,7 @@ async function Logout(navigate) {
         },
       };
       axios.request(config).then((response) => {
-        console.log(JSON.stringify(response.data));
+        // console.log(JSON.stringify(response.data));
         localStorage.clear();
         navigate("/");
       });

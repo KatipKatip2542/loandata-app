@@ -237,7 +237,7 @@ const Process = () => {
       // setSumUser([]);
       const response = await getProcessUserList(id);
       if (response?.status == 200) {
-        console.log(response?.data);
+        // console.log(response?.data);
         setSumUser(response?.data);
         setDisableButton(status == "1" ? false : true);
       } else {
@@ -254,7 +254,7 @@ const Process = () => {
     // setFetchId(id);
     try {
       const response = await getProcessUserListSum(id);
-      console.log(response);
+      // console.log(response);
       setUserListSum(response);
     } catch (error) {
       console.error(error);
@@ -306,7 +306,7 @@ const Process = () => {
     setUserData(data);
   };
 
-  console.log(userData);
+  // console.log(userData);
 
   const handleAddProcess = async () => {
     try {
@@ -433,7 +433,7 @@ const Process = () => {
   const startEnd = moment(searchQueryEnd).format("YYYY-MM-DD");
   const dateSend = moment(changeDate).format("YYYY-MM-DD");
 
-  console.log(listDataCustomer);
+  // console.log(listDataCustomer);
 
   const handleChangeStatus = async (changestatus, dataed) => {
     try {
@@ -456,7 +456,7 @@ const Process = () => {
           date: dateSend == "Invalid date" ? null : dateSend,
           status_count: dataed?.status_count,
         };
-        console.log(data);
+        // console.log(data);
 
         const response = await changeStatus(data);
         // console.log(response);
@@ -501,7 +501,7 @@ const Process = () => {
   };
 
   const handleUpdate = async () => {
-    console.log(statusValue.value);
+    // console.log(statusValue.value);
     try {
       let data = {
         id: userId,
@@ -513,9 +513,9 @@ const Process = () => {
         // date: Number(userListData?.count_day)
         date: Number(amountDate),
       };
-      console.log(data);
+      // console.log(data);
       const response = await sendUpdate(data);
-      console.log(response);
+      // console.log(response);
       if (response?.status == 200) {
         toast.success("เปลี่ยนสถานะ สำเร็จ");
         handleFetch();
@@ -548,7 +548,7 @@ const Process = () => {
       };
 
       const response = await sendClose(data);
-      console.log(response?.data);
+      // console.log(response?.data);
       if (response?.status == 200) {
         toast.success("ปิดยอด สำเร็จ");
         setReturnReload(response?.data);
@@ -580,9 +580,9 @@ const Process = () => {
         count_day: userListData?.count_day,
         // status: Number(radio)
       };
-      console.log(data);
+      // console.log(data);
       const response = await sendReload(data);
-      console.log(response?.data);
+      // console.log(response?.data);
       if (response?.status == 200) {
         toast.success("รียอด สำเร็จ");
         setReturnReload(response?.data);
@@ -624,7 +624,7 @@ const Process = () => {
 
   const handleChangeSwitch = (index, checked) => {
     // คัดลอก sumUser และอัพเดทค่า status_count ตาม checked ใหม่
-    console.log(checked);
+    // console.log(checked);
     const updatedSumUser = sumUser.map((data, i) => {
       if (i === index) {
         return {
@@ -690,7 +690,7 @@ const Process = () => {
         })),
       };
       const response = await sortUser(data, dataProcessStore?.id);
-      console.log(response?.status);
+      // console.log(response?.status);
       if (response?.status == 200) {
         fetchStatus();
         toast.success("ทำรายการสำเร็จ");
@@ -720,7 +720,7 @@ const Process = () => {
         count_day: userData?.count_day,
       };
       const response = await clearUser(data);
-      console.log(response?.status);
+      // console.log(response?.status);
       if (response?.status == 200) {
         fetchStatus();
         fetchUpdateAll();
@@ -1964,13 +1964,13 @@ const Process = () => {
             <Typography className=" text-xl font-bold">
               ข้อมูลจะถูกเริ่มต้นใหม่ทั้งหมด{" "}
             </Typography>
-            <Typography className="text-red-500 underline">{`(เฉพาะคุณ ${userData?.name})`}</Typography>
+            <Typography className="text-red-500 underline text-xl font-bold">{`(เฉพาะคุณ ${userData?.name})`}</Typography>
             <Typography className=" text-xl font-bold">
               ข้อมูลรายงานรียอดจะถูกลบ{" "}
             </Typography>
           </div>
         </DialogBody>
-        <DialogFooter className="flex justify-center gap-5 mt-5">
+        <DialogFooter className="flex justify-center gap-5 mt-7">
           <Button
             size="md"
             variant="gradient"

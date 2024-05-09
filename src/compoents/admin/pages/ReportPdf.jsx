@@ -295,7 +295,7 @@ export const ReportPdf = ({
   handleModalReceiptSubFull,
   dataPdf,
 }) => {
-  console.log(dataPdf);
+  // console.log(dataPdf);
 
   const itemsPerPage = 1; // จำนวนรายการต่อหน้า
 
@@ -320,7 +320,7 @@ export const ReportPdf = ({
 
   const pages = generatePages(dataPdf);
 
-  console.log(pages);
+  // console.log(pages);
 
   return (
     <Dialog

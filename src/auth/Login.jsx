@@ -65,7 +65,7 @@ import {
           toast.success("เข้าสู่ระบบสำเร็จ");
             const token = res.data.token;
             let decoded = jwtDecode(token);
-            console.log(decoded.username) 
+            // console.log(decoded.username) 
           if (decoded.status == "0") {
             localStorage.setItem("User", decoded.username);
             setTimeout(() => {

@@ -31,11 +31,11 @@ import {
 import { useRecoilState, useRecoilValue } from "recoil";
 import { customerStore , customerIdStore , processStore } from "../../../store/Store";
 
-const Customer = (data) => {
+const Customer = () => {
   //----------  Data Table --------------------//
   const [listData, setListData] = useState([]);
 
-  console.log(data)
+  // console.log(data)
 
   const [searchQuery, setSearchQuery] = useState("");
   const [customerDataStore, setCustomerDataStore] = useRecoilState(customerStore);
@@ -43,12 +43,12 @@ const Customer = (data) => {
   const customerId = useRecoilValue(customerIdStore)
   const dataProcessStore = useRecoilValue(processStore)
 
-  console.log(customerId)
+  // console.log(customerId)
 
   const fetchCustomer = async () => {
     try {
       const response = await getCustomer(customerId , searchQuery);
-      console.log(response);
+      // console.log(response);
       setListData(response);
       setCustomerDataStore(response);
     } catch (error) {
@@ -150,7 +150,7 @@ const Customer = (data) => {
     }
   };
 
-  console.log(dataProcessStore)
+  // console.log(dataProcessStore)
   return (
     <Card className=" w-full sm:h-[83vh]   ">
       <ToastContainer className="mt-10" autoClose={800} theme="colored" />

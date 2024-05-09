@@ -53,7 +53,7 @@ const NotPaidLocation = () => {
     setSelectedLocation(locations);
     setSendId(locations?.id || "");
   };
-  console.log(sendId);
+  // console.log(sendId);
 
   const fecthNotPaidLocation = async () => {
     try {

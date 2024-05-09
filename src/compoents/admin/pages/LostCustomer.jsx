@@ -60,12 +60,12 @@ const LostCustomer = () => {
     setSendId(locations?.id || "");
   };
 
-  console.log(selectedLocation);
+  // console.log(selectedLocation);
 
   const fecthLostCustomer = async () => {
     try {
       const respone = await getLostCustomer(customerId);
-      console.log(respone)
+      // console.log(respone)
       setListData(respone);
     } catch (error) {
       toast.error(error);
@@ -77,7 +77,7 @@ const LostCustomer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sendId]);
 
-  console.log(listData)
+  // console.log(listData)
 
   return (
     <div>

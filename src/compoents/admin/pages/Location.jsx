@@ -59,7 +59,7 @@ const Location = () => {
     try {
       const response = await getLocation(searchQuery);
 
-      console.log(response);
+      // console.log(response);
       setListData(response);
       setDataLocationStore(response);
     } catch (error) {
@@ -103,7 +103,7 @@ const Location = () => {
       };
 
       const response = await addLocation(data);
-      console.log(response?.response);
+      // console.log(response?.response);
       if (response?.response?.status == 500) {
         setOpenModalAdd(false);
         toast.error(response?.response?.data?.message);
