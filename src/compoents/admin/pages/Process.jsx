@@ -582,7 +582,7 @@ const Process = () => {
       };
       // console.log(data);
       const response = await sendReload(data);
-      // console.log(response?.data);
+      console.log(response?.data);
       if (response?.status == 200) {
         toast.success("รียอด สำเร็จ");
         setReturnReload(response?.data);

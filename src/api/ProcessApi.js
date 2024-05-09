@@ -1,11 +1,9 @@
 import axios from "axios";
 import { HeaderAPI } from "../../headerApi";
 
-
 export const getProcess = async (searchQuery) => {
   // console.log(searchQuery);
   try {
-    // let token = localStorage.getItem("Token")
     const response = await axios.get(
       `${import.meta.env.VITE_APP_API}/api/process/title?search=${searchQuery}`,
       {
@@ -20,7 +18,6 @@ export const getProcess = async (searchQuery) => {
 
 export const getProcessId = async (searchUserId) => {
   try {
-    // let token = localStorage.getItem("Token")
     const response = await axios.get(
       `${
         import.meta.env.VITE_APP_API
@@ -67,7 +64,7 @@ export const getUpdateAll = async (processId) => {
   }
 };
 
-export const getProcessUser = async (id, status , searchQuery1 ) => {
+export const getProcessUser = async (id, status, searchQuery1) => {
   // console.log(id)
   // console.log(status)
   try {
@@ -82,12 +79,11 @@ export const getProcessUser = async (id, status , searchQuery1 ) => {
     );
     return response;
   } catch (error) {
-    return error
+    return error;
   }
 };
 
-
-export const getProcessUser1 = async (id , searchQuery1) => {
+export const getProcessUser1 = async (id, searchQuery1) => {
   try {
     // let token = localStorage.getItem("Token")
     const response = await axios.get(
@@ -100,7 +96,7 @@ export const getProcessUser1 = async (id , searchQuery1) => {
     );
     return response;
   } catch (error) {
-    return error
+    return error;
   }
 };
 
@@ -119,7 +115,7 @@ export const getProcessUserList = async (id) => {
     // console.log(response)
     return response;
   } catch (error) {
-    return error
+    return error;
   }
 };
 
@@ -148,7 +144,7 @@ export const userUpdate = async (data) => {
       }
     );
     // console.log(response)
-    if(response.status === 200) {
+    if (response.status === 200) {
       return response;
     }
   } catch (error) {
@@ -168,7 +164,7 @@ export const changeStatus = async (data) => {
     // console.log(response)
     return response;
   } catch (error) {
-    return error
+    return error;
   }
 };
 
@@ -184,12 +180,11 @@ export const changeCancel = async (data) => {
     // console.log(response)
     return response;
   } catch (error) {
-    return error
+    return error;
   }
 };
 
 export const sendUpdate = async (data) => {
-
   try {
     const response = await axios.put(
       `${import.meta.env.VITE_APP_API}/api/process/user`,
@@ -200,7 +195,7 @@ export const sendUpdate = async (data) => {
     );
     return response;
   } catch (error) {
-    return error
+    return error;
   }
 };
 
@@ -215,7 +210,7 @@ export const sendClose = async (data) => {
     );
     return response;
   } catch (error) {
-    return error
+    return error;
   }
 };
 
@@ -230,11 +225,11 @@ export const sendReload = async (data) => {
     );
     return response;
   } catch (error) {
-    return error
+    return error;
   }
 };
 
-export const sortUser = async (data ,id) => {
+export const sortUser = async (data, id) => {
   // console.log(data)
   try {
     const response = await axios.post(
@@ -246,7 +241,7 @@ export const sortUser = async (data ,id) => {
     );
     return response;
   } catch (error) {
-    return error
+    return error;
   }
 };
 
@@ -262,6 +257,6 @@ export const clearUser = async (data) => {
     );
     return response;
   } catch (error) {
-    return error
+    return error;
   }
 };
