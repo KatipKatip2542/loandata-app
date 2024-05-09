@@ -128,7 +128,7 @@ const Process = () => {
       const response = await getProcess(searchQuery);
       setListData(response);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
