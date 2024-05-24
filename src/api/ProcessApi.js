@@ -143,7 +143,7 @@ export const userUpdate = async (data) => {
         ...HeaderAPI(localStorage.getItem("Token")),
       }
     );
-    // console.log(response)
+    console.log(response)
     if (response.status === 200) {
       return response;
     }

@@ -390,11 +390,10 @@ const Process = () => {
       };
       const response = await userUpdate(data);
       // console.log(response)
-      if (response) {
+      if (response.status == 200) {
         toast.success("เพิ่ม/อัพเดทข้อมูล ลูกค้า สำเร็จ");
         handleFetch();
-        setAmountDate(0);
-        setAmount(0);
+        setAmountDate(0);setAmount(0);
         setSearchQueryStart(new Date());
         setSearchQueryEnd(new Date());
         setSelectedValue(null);
@@ -553,11 +552,30 @@ const Process = () => {
         toast.success("ปิดยอด สำเร็จ");
         setReturnReload(response?.data);
         fetchUserList();
-        // handleModalDataReload();
-        handleFetch();
+        fetchStatus(0);
+
+                // reset Status
+                setSelectDisable(0),
+                setSelectedValue(null),
+                setStatusValue(null),
+                setAmount(0),
+                setAmountDate(0),
+                setSearchQueryStart(new Date()),
+                setSearchQueryEnd(new Date()),
+                setUserListData([])
+              setUserListSum([])
+              setSumUser([])
+              setActiveRow("")
+
+              // open menu  จ่ายครบแล้ว
+              setActiveCustomerMenu("menu3")
+              fetchStatus(1)
+              setDisableButton(false)
+              setSumUser([])
+              setActiveRow()
+
       } else {
         toast.error(response?.response?.data);
-        // handleModalReload();
       }
     } catch (error) {
       toast.error(error);
