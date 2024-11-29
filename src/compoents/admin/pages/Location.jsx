@@ -233,7 +233,7 @@ const Location = () => {
                       ชื่อสถานที่
                     </Typography>
                   </th>
-                  <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 ">
+                  {/* <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 ">
                     <Typography
                       variant="small"
                       color="blue-gray"
@@ -241,7 +241,7 @@ const Location = () => {
                     >
                       เบอร์โทรศัพท์
                     </Typography>
-                  </th>
+                  </th> */}
                   <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 ">
                     <Typography
                       variant="small"
@@ -332,7 +332,7 @@ const Location = () => {
                             </Link>
                           </div>
                         </td>
-                        <td className={classes}>
+                        {/* <td className={classes}>
                           <div className="flex items-center justify-center">
                             <Typography
                               variant="small"
@@ -342,7 +342,7 @@ const Location = () => {
                               {data?.tell || ""}
                             </Typography>
                           </div>
-                        </td>
+                        </td> */}
                         <td className={classes}>
                           <div className="flex items-center justify-center  ">
                             <Typography
@@ -434,7 +434,7 @@ const Location = () => {
                   }
                 />
               </div>
-              <div className="flex  mt-3">
+              {/* <div className="flex  mt-3">
                 <Input
                   type="text"
                   label="เบอร์โทรศัพท์"
@@ -448,7 +448,7 @@ const Location = () => {
                     })
                   }
                 />
-              </div>
+              </div> */}
               <div className="flex   mt-3">
                 <Textarea
                   label="ที่อยู่สำนักงาน"
@@ -519,7 +519,7 @@ const Location = () => {
                   }
                 />
               </div>
-              <div className="flex  mt-3">
+              {/* <div className="flex  mt-3">
                 <Input
                   type="text"
                   label="เบอร์โทรศัพท์"
@@ -534,7 +534,7 @@ const Location = () => {
                     })
                   }
                 />
-              </div>
+              </div> */}
               <div className="flex   mt-3">
                 <Textarea
                   label="ที่อยู่สถานที่"

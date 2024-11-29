@@ -213,7 +213,7 @@ const Customer = () => {
                     ชื่อ-สกุล
                   </Typography>
                 </th>
-                <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 ">
+                {/* <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 ">
                   <Typography
                     variant="small"
                     color="blue-gray"
@@ -221,7 +221,7 @@ const Customer = () => {
                   >
                     เบอร์โทรศัพท์
                   </Typography>
-                </th>
+                </th> */}
                 <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 ">
                   <Typography
                     variant="small"
@@ -283,7 +283,7 @@ const Customer = () => {
                           </Typography>
                         </div>
                       </td>
-                      <td className={classes}>
+                      {/* <td className={classes}>
                         <div className="flex items-center justify-center">
                           <Typography
                             variant="small"
@@ -293,7 +293,7 @@ const Customer = () => {
                             {data?.tell || ""}
                           </Typography>
                         </div>
-                      </td>
+                      </td> */}
                       <td className={classes}>
                         <div className="flex items-center justify-center ">
                           <Typography
@@ -358,7 +358,7 @@ const Customer = () => {
                   }
                 />
               </div>
-              <div className="flex  mt-3">
+              {/* <div className="flex  mt-3">
                 <Input
                   type="text"
                   label="เบอร์โทรศัพท์"
@@ -372,7 +372,7 @@ const Customer = () => {
                     })
                   }
                 />
-              </div>
+              </div> */}
               <div className="flex   mt-3">
                 <Textarea
                   label="ที่อยู่"
@@ -443,7 +443,7 @@ const Customer = () => {
                   }
                 />
               </div>
-              <div className="flex  mt-3">
+              {/* <div className="flex  mt-3">
                 <Input
                   type="text"
                   label="เบอร์โทรศัพท์"
@@ -458,7 +458,7 @@ const Customer = () => {
                     })
                   }
                 />
-              </div>
+              </div> */}
               <div className="flex   mt-3">
                 <Textarea
                   label="ที่อยู่"
