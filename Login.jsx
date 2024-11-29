@@ -70,7 +70,7 @@ import {
           <div className="flex justify-center mt-10">
             <Typography variant="h4">เข้าสู่ระบบ.</Typography>
           </div>
-          <CardBody className="flex flex-col mt-5 gap-4 mt-10">
+          <CardBody className="flex flex-col  gap-4 mt-10">
             <Input
               color="blue"
               label="UserName"
