@@ -19,7 +19,7 @@ const MenuList = ({ darkTheme, toggleTheme }) => {
 
   const [collapsed, setCollapsed] = useRecoilState(collapsedStore);
 
-  const [HideActive , setHideActive] = useState(0)
+  const [HideActive, setHideActive] = useState(0);
 
   const checkScreenSize = () => {
     if (window.innerWidth < 960) {
@@ -28,6 +28,33 @@ const MenuList = ({ darkTheme, toggleTheme }) => {
       setHideActive(0);
     }
   };
+
+  const menuItems = [
+    {
+      key: "/admin",
+      icon: <DatabaseOutlined style={iconStyle} />,
+      label: (
+        <Link
+          to="/admin"
+          onClick={() => (HideActive === 1 ? setCollapsed(!collapsed) : "")}
+        >
+          สถานที่
+        </Link>
+      ),
+    },
+    {
+      key: "/admin/report/check",
+      icon: <TbReportAnalytics style={iconStyle} />,
+      label: (
+        <Link
+          to="/admin/report/check"
+          onClick={() => (HideActive === 1 ? setCollapsed(!collapsed) : "")}
+        >
+          ยังจ่ายไม่ครบ
+        </Link>
+      ),
+    },
+  ];
 
   useEffect(() => {
     // เรียกฟังก์ชันเมื่อ Component โหลดหรือขนาดหน้าจอเปลี่ยน
@@ -42,11 +69,9 @@ const MenuList = ({ darkTheme, toggleTheme }) => {
 
   return (
     <div>
-      <ConfigProvider
+      {/* <ConfigProvider
         theme={{
           token: {
-            // colorPrimary: "#EF86F1",
-            // colorPrimary: "#ED5EF0",
             colorPrimary: "#aa3dac",
           },
         }}
@@ -62,23 +87,30 @@ const MenuList = ({ darkTheme, toggleTheme }) => {
               สถานที่
             </Link>
           </Menu.Item>
-          {/* <Menu.Item 
-            key="/admin/process"
-            icon={<GoWorkflow style={iconStyle} />}
-          >
-            <Link to="/admin/process"  onClick={() => [HideActive == 1 ? setCollapsed(!collapsed) : '']} >
-              Process
+
+          <Menu.Item key="/admin/report/check" icon={<TbReportAnalytics style={iconStyle} />}>
+            <Link to="/admin/report/check" onClick={() => [HideActive == 1 ? setCollapsed(!collapsed) : '']} >
+              ยังจ่ายไม่ครบ
             </Link>
-          </Menu.Item> */}
-          {/* <Menu.Item
-            key="/admin/report"
-            icon={<TbReportAnalytics style={iconStyle} />}
-          >
-            <Link to="/admin/report"  onClick={() => [HideActive == 1 ? setCollapsed(!collapsed) : '']} >
-              รายงาน
-            </Link>
-          </Menu.Item> */}
+          </Menu.Item>
+
         </Menu>
+      </ConfigProvider> */}
+
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: "#aa3dac",
+          },
+        }}
+      >
+        <Menu
+          theme={darkTheme ? "dark" : "light"}
+          mode="inline"
+          className="menu-bar"
+          selectedKeys={[currentPath]}
+          items={menuItems} 
+        />
       </ConfigProvider>
     </div>
   );

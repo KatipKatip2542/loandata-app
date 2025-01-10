@@ -97,3 +97,33 @@ export const getLostCustomer = async (id) => {
       console.error(error);
     }
   };
+
+  export const getAllReportCheckMyHome = async()=> {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_API}/api/report/check/home`,
+        {
+          ...HeaderAPI(localStorage.getItem("Token")),
+        }
+      );
+      // console.log(response)
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  export const getAllReportCheckMyHomeList = async(id)=> {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_API}/api/report/check/home/list`,{id},
+        {
+          ...HeaderAPI(localStorage.getItem("Token")),
+        }
+      );
+      // console.log(response)
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }

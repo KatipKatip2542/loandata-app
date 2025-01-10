@@ -126,6 +126,8 @@ const Process = () => {
   const fetchProcess = async () => {
     try {
       const response = await getProcess(searchQuery);
+      console.log({response});
+      
       setListData(response);
     } catch (error) {
       // console.error(error);
@@ -133,7 +135,7 @@ const Process = () => {
   };
 
   useEffect(() => {
-    fetchProcess();
+    // fetchProcess();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
@@ -234,10 +236,8 @@ const Process = () => {
   const fetchUserList = async (id, status) => {
     try {
       setUserId(id);
-      // setSumUser([]);
       const response = await getProcessUserList(id);
       if (response?.status == 200) {
-        // console.log(response?.data);
         setSumUser(response?.data);
         setDisableButton(status == "1" ? false : true);
       } else {
@@ -322,7 +322,7 @@ const Process = () => {
         toast.success("เพิ่มข้อมูล Process สำเร็จ");
       }
 
-      fetchProcess();
+      // await fetchProcess();
 
       setOpenModalConfirm(false);
     } catch (error) {
@@ -527,7 +527,6 @@ const Process = () => {
           setSearchQueryEnd(new Date()),
           setUserListData([]);
 
-        // setSumUser([]);
         // setActiveRow("");
       } else {
         toast.error(response?.response?.data);
@@ -1006,7 +1005,6 @@ const Process = () => {
                           setActiveCustomerMenu("menu1"),
                           fetchStatus1(),
                           setDisableButton(true),
-                          setSumUser([]),
                           setActiveRow(),
                         ]}
                       >
@@ -1554,17 +1552,7 @@ const Process = () => {
                                       </div>
                                     </td>
                                   )}
-                                  {/* <td className={classes}>
-                                    <div className="flex items-center justify-center">
-                                      <Typography
-                                        variant="small"
-                                        color="blue-gray"
-                                        className="font-normal "
-                                      >
-                                        {data?.price || ""}
-                                      </Typography>
-                                    </div>
-                                  </td> */}
+                          
                                   <td className={classes}>
                                     <div className="flex items-center justify-center">
                                       <Typography
@@ -1590,8 +1578,6 @@ const Process = () => {
                                     <div className="flex items-center justify-center">
                                       <Switch
                                         color="blue"
-                                        // className="bg-green-500"
-                                        // checked={data?.status_count}
                                         checked={data.status_count == "1"}
                                         onChange={(e) =>
                                           handleChangeSwitch(
@@ -1625,7 +1611,6 @@ const Process = () => {
                                               : "",
                                             data
                                           ),
-                                          // handleButton(),
                                         ]}
                                       >
                                         <FaRegSave className="h-5 w-5  text-green-700 " />
