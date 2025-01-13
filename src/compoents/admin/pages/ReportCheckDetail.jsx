@@ -6,14 +6,15 @@ import ReportCheckDetailModal from "./ReportCheckDetailModal";
 const ReportCheckDetail = () => {
   const [data, setData] = useState([]);
   const [sum, setSum] = useState({
-    count_pay: 20,
-    count_no_pay: 20,
-    sum_all: 10,
-    sum_paying: 10,
-    sum_remaining: 10,
+    name: "",
+    count_pay: 0,
+    count_no_pay: 0,
+    sum_all: 0,
+    sum_paying: 0,
+    sum_remaining: 0,
   });
-  const [idList, setIdList] = useState("")
-  const [nameList , setnameList] = useState("")
+  const [idList, setIdList] = useState("");
+  const [nameList, setnameList] = useState("");
   const location = useLocation();
   const { id } = location.state || {};
 
@@ -21,9 +22,9 @@ const ReportCheckDetail = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = (id, name) => {
     setOpen(!open);
-    setIdList(id)
-    setnameList(name)
-  }
+    setIdList(id);
+    setnameList(name);
+  };
 
   const fetchData = async () => {
     try {
@@ -32,6 +33,7 @@ const ReportCheckDetail = () => {
       setData(res);
       setData(res.result);
       setSum({
+        name: res.name,
         count_pay: res.count_pay,
         count_no_pay: res.count_no_pay,
         sum_all: res.sum_all,
@@ -49,9 +51,16 @@ const ReportCheckDetail = () => {
 
   return (
     <div className="h-screen">
-      <ReportCheckDetailModal open={open} handleOpen={handleOpen} process_id={id} process_user_id={idList}  fetchData={fetchData} process_user_name={nameList}   />
-      <div className="flex flex-row gap-4 items-center">
-        {/* <p>ReportCheckDetail id : {id}</p> */}
+      <ReportCheckDetailModal
+        open={open}
+        handleOpen={handleOpen}
+        process_id={id}
+        process_user_id={idList}
+        fetchData={fetchData}
+        process_user_name={nameList}
+      />
+      <div className="flex flex-row gap-8 items-center ">
+        <p className="text-xl">{sum.name || ""}</p>
         <Link
           to="/admin/report/check"
           className="bg-red-500 text-white px-4 py-1 rounded-md"
@@ -74,14 +83,25 @@ const ReportCheckDetail = () => {
                 </tr>
               </thead>
               <tbody>
-                {data?.map((item) => (
+                {data?.map((item, index) => (
                   <tr key={item.id} className="hover:bg-gray-100">
-                    <td className="px-4 py-2 border">{item.name}</td>
-                    <td className="px-4 py-2 border">{Number(item.total).toLocaleString()}</td>
-                    <td className="px-4 py-2 border">{Number(item.paid).toLocaleString()}</td>
-                    <td className="px-4 py-2 border">{Number(item.overdue).toLocaleString()}</td>
                     <td className="px-4 py-2 border">
-                      <button onClick={()=>handleOpen(item.id, item.name)}  className="bg-red-500 hover:bg-red-700 text-white text-sm px-2 py-0.5 rounded-md">
+                      {index + 1} {".  "} {item.name}
+                    </td>
+                    <td className="px-4 py-2 border">
+                      {Number(item.total).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-2 border">
+                      {Number(item.paid).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-2 border">
+                      {Number(item.overdue).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-2 border">
+                      <button
+                        onClick={() => handleOpen(item.id, item.name)}
+                        className="bg-red-500 hover:bg-red-700 text-white text-sm px-2 py-0.5 rounded-md"
+                      >
                         ชำระเงิน
                       </button>
                     </td>
@@ -98,8 +118,12 @@ const ReportCheckDetail = () => {
           <p className=" mt-3 text-xl text-red-500 font-medium">
             ราคารวม {Number(sum.sum_all).toLocaleString()} บาท
           </p>
-          <p className="text-lg mt-1.5">จ่ายแล้ว {Number(sum.sum_paying).toLocaleString()} บาท</p>
-          <p className="text-lg mt-1.5">คงเหลือ {Number(sum.sum_remaining).toLocaleString()} บาท</p>
+          <p className="text-lg mt-1.5">
+            จ่ายแล้ว {Number(sum.sum_paying).toLocaleString()} บาท
+          </p>
+          <p className="text-lg mt-1.5">
+            คงเหลือ {Number(sum.sum_remaining).toLocaleString()} บาท
+          </p>
         </div>
       </div>
     </div>
