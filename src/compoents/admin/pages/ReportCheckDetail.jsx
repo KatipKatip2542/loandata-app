@@ -10,8 +10,7 @@ const ReportCheckDetail = () => {
     count_pay: 0,
     count_no_pay: 0,
     sum_all: 0,
-    sum_paying: 0,
-    sum_remaining: 0,
+    
   });
   const [idList, setIdList] = useState("");
   const [nameList, setnameList] = useState("");
@@ -37,8 +36,6 @@ const ReportCheckDetail = () => {
         count_pay: res.count_pay,
         count_no_pay: res.count_no_pay,
         sum_all: res.sum_all,
-        sum_paying: res.sum_paying,
-        sum_remaining: res.sum_remaining,
       });
     } catch (error) {
       console.log(error);
@@ -111,19 +108,10 @@ const ReportCheckDetail = () => {
             </table>
           </div>
         </div>
-        <div className="w-full lg:w-1/3 bg-white px-4 py-2 rounded-md shadow-md h-52">
-          <p className="text-lg mt-1.5">ทั้งหมด {sum.count_pay} คน</p>
+        <div className="w-full lg:w-1/3 bg-white px-4 py-5 rounded-md shadow-md h-1/2">
+          <p className="text-lg mt-1.5">วันนี้มลูกค้าจ่ายมาแล้ว {sum.count_pay} คน</p>
           <p className="text-lg mt-1.5">ยังไม่จ่าย {sum.count_no_pay} คน</p>
-
-          <p className=" mt-3 text-xl text-red-500 font-medium">
-            ราคารวม {Number(sum.sum_all).toLocaleString()} บาท
-          </p>
-          <p className="text-lg mt-1.5">
-            จ่ายแล้ว {Number(sum.sum_paying).toLocaleString()} บาท
-          </p>
-          <p className="text-lg mt-1.5">
-            คงเหลือ {Number(sum.sum_remaining).toLocaleString()} บาท
-          </p>
+          <p className="text-lg mt-1.5">รวมทั้งหมด {sum.sum_all} คน</p>
         </div>
       </div>
     </div>
